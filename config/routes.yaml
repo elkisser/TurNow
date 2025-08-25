@@ -3,3 +3,43 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+    
+home:
+    path: /
+    controller: App\Controller\HomeController::index
+    methods: [GET]
+
+admin_dashboard:
+    path: /admin
+    controller: App\Controller\AdminController::dashboard
+    methods: [GET]
+
+admin_servicios:
+    path: /admin/servicios
+    controller: App\Controller\AdminController::servicios
+    methods: [GET, POST]
+
+admin_turnos:
+    path: /admin/turnos
+    controller: App\Controller\AdminController::turnos
+    methods: [GET]
+
+reservar_turno:
+    path: /turno/reservar
+    controller: App\Controller\ServicioController::reservar
+    methods: [POST]
+
+api_turnos_disponibles:
+    path: /api/turnos/disponibles
+    controller: App\Controller\Api\TurnoController::disponibles
+    methods: [GET]
+
+servicio_publico:
+    path: /servicio/{id}
+    controller: App\Controller\ServicioPublicoController::showServicio
+    methods: [GET, POST]
+
+mis_servicios:
+    path: /mis-servicios
+    controller: App\Controller\ServicioPublicoController::misServicios
+    methods: [GET]

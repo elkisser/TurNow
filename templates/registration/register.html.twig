@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Registro - TurNow{% endblock %}
+
+{% block css %}
+    {{ parent() }}
+    <style>
+        .register-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 2rem 0;
+        }
+        
+        .register-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+        
+        .register-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<section class="register-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="register-card">
+                    <div class="register-logo">
+                        <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
+                        <h2 class="h3 text-dark">Crear Cuenta TurNow</h2>
+                        <p class="text-muted">Comienza tu prueba gratuita de 14 días</p>
+                    </div>
+
+                    {{ form_start(registrationForm) }}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(registrationForm.nombre, null, {'label_attr': {'class': 'form-label'}}) }}
+                                    {{ form_widget(registrationForm.nombre, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Tu nombre completo'}}) }}
+                                    {{ form_errors(registrationForm.nombre) }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(registrationForm.email, null, {'label_attr': {'class': 'form-label'}}) }}
+                                    {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'tu@email.com'}}) }}
+                                    {{ form_errors(registrationForm.email) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.plainPassword, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Mínimo 6 caracteres'}}) }}
+                            {{ form_errors(registrationForm.plainPassword) }}
+                            <div class="form-text">La contraseña debe tener al menos 6 caracteres.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(registrationForm.agreeTerms, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                {{ form_errors(registrationForm.agreeTerms) }}
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-premium btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Crear Cuenta
+                            </button>
+                        </div>
+                    {{ form_end(registrationForm) }}
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p class="text-muted mb-0">¿Ya tienes cuenta?</p>
+                        <a href="{{ path('app_login') }}" class="btn btn-outline-primary btn-sm mt-2">
+                            Ingresar a mi cuenta
+                        </a>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <small class="text-muted">Al registrarte, aceptas nuestros <a href="#">Términos de Servicio</a> y <a href="#">Política de Privacidad</a>.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Iniciar Sesión - TurNow{% endblock %}
+
+{% block css %}
+    {{ parent() }}
+    <style>
+        .login-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+        
+        .login-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<section class="login-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="login-card">
+                    <div class="login-logo">
+                        <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
+                        <h2 class="h3 text-dark">TurNow</h2>
+                        <p class="text-muted">Ingresa a tu cuenta</p>
+                    </div>
+
+                    {% if error %}
+                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    {% endif %}
+
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="inputEmail" class="form-label">Email</label>
+                            <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control form-control-lg" autocomplete="email" required autofocus>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="inputPassword" class="form-label">Contraseña</label>
+                            <input type="password" name="password" id="inputPassword" class="form-control form-control-lg" autocomplete="current-password" required>
+                        </div>
+
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-premium btn-lg" type="submit">
+                                <i class="fas fa-sign-in-alt me-2"></i>Ingresar
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p class="text-muted mb-0">¿No tienes cuenta?</p>
+                        <a href="{{ path('app_register') }}" class="btn btn-outline-primary btn-sm mt-2">
+                            Crear cuenta gratis
+                        </a>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <a href="#" class="text-muted small">¿Olvidaste tu contraseña?</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

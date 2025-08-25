@@ -1,0 +1,592 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ servicio.nombre }} - TurNow{% endblock %}
+
+{% block css %}
+{{ parent() }}
+<style>
+    .service-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* Header con Banner */
+    .page-header {
+        height: 60vh;
+        min-height: 500px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+    }
+    
+    .header-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 800px;
+        padding: 0 2rem;
+    }
+    
+    .page-title {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        line-height: 1.1;
+    }
+    
+    .page-description {
+        font-size: 1.4rem;
+        opacity: 0.95;
+        line-height: 1.6;
+        margin-bottom: 2.5rem;
+        font-weight: 300;
+    }
+    
+    /* Contenido Principal */
+    .page-content {
+        padding: 5rem 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    /* Sección de Horarios Premium */
+    .schedule-section {
+        background: white;
+        padding: 4rem;
+        border-radius: 25px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        margin-bottom: 4rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .section-heading {
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 3rem;
+        text-align: center;
+        position: relative;
+    }
+    
+    .section-heading::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 1rem auto;
+        border-radius: 2px;
+    }
+    
+    .schedule-grid {
+        display: grid;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .schedule-day {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border-left: 5px solid #667eea;
+        transition: all 0.3s ease;
+    }
+    
+    .schedule-day:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.15);
+    }
+    
+    .day-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .day-name {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .day-name i {
+        color: #667eea;
+        font-size: 1.2rem;
+    }
+    
+    .day-status {
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-open {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(67, 233, 123, 0.3);
+    }
+    
+    .status-closed {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+    
+    .time-slots-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+    }
+    
+    .time-slot {
+        background: white;
+        border: 2px solid #e9ecef;
+        padding: 1.25rem 1rem;
+        border-radius: 15px;
+        text-align: center;
+        font-weight: 600;
+        color: #495057;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .time-slot::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 1;
+    }
+    
+    .time-slot span {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .time-slot:hover {
+        border-color: #667eea;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+    }
+    
+    .time-slot:hover::before {
+        opacity: 1;
+    }
+    
+    .time-slot.selected {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: #667eea;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        transform: scale(1.05);
+    }
+    
+    .time-slot.selected::before {
+        opacity: 1;
+    }
+    
+    /* Botón de Reserva */
+    .reserve-btn-container {
+        text-align: center;
+        margin-top: 3rem;
+        padding: 2rem;
+    }
+    
+    .reserve-btn {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        color: white;
+        border: none;
+        padding: 1.5rem 3rem;
+        border-radius: 50px;
+        font-size: 1.3rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .reserve-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 15px 40px rgba(255, 107, 107, 0.5);
+    }
+    
+    .reserve-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    /* Modal de Reserva */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        padding: 2rem;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 25px;
+        padding: 3rem;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+        position: relative;
+        animation: modalSlideIn 0.4s ease;
+    }
+    
+    @keyframes modalSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-50px) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    
+    .modal-close {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #6c757d;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+    
+    .modal-close:hover {
+        color: #ff6b6b;
+    }
+    
+    .modal-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    
+    .modal-subtitle {
+        color: #6c757d;
+        text-align: center;
+        margin-bottom: 2.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .selected-time {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+    
+    .reserva-form {
+        width: 100%;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        outline: none;
+    }
+    
+    .submit-btn {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+        border: none;
+        padding: 1.25rem 2rem;
+        border-radius: 15px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        width: 100%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+    
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(67, 233, 123, 0.3);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2.5rem;
+        }
+        
+        .page-description {
+            font-size: 1.1rem;
+        }
+        
+        .schedule-section {
+            padding: 2rem;
+        }
+        
+        .section-heading {
+            font-size: 2rem;
+        }
+        
+        .time-slots-grid {
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="service-page">
+    <!-- Header con Banner -->
+    <div class="page-header" {% if servicio.bannerUrl %}style="background-image: url('{{ servicio.bannerUrl }}')"{% endif %}>
+        <div class="header-content">
+            <h1 class="page-title">{{ servicio.nombre }}</h1>
+            <p class="page-description">{{ servicio.descripcion }}</p>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="page-content">
+        <!-- Sección de Horarios -->
+        <div class="schedule-section">
+            <h2 class="section-heading">📅 Horarios de Atención</h2>
+            <div class="schedule-grid">
+                {% set days = [
+                    {id: 1, name: 'Lunes', icon: 'fas fa-calendar-day'},
+                    {id: 2, name: 'Martes', icon: 'fas fa-calendar-day'},
+                    {id: 3, name: 'Miércoles', icon: 'fas fa-calendar-day'},
+                    {id: 4, name: 'Jueves', icon: 'fas fa-calendar-day'},
+                    {id: 5, name: 'Viernes', icon: 'fas fa-calendar-day'},
+                    {id: 6, name: 'Sábado', icon: 'fas fa-calendar-day'},
+                    {id: 7, name: 'Domingo', icon: 'fas fa-calendar-day'}
+                ] %}
+                
+                {% for day in days %}
+                    <div class="schedule-day">
+                        <div class="day-header">
+                            <span class="day-name">
+                                <i class="{{ day.icon }}"></i>
+                                {{ day.name }}
+                            </span>
+                            <span class="day-status {{ day.id in servicio.diasTrabajo ? 'status-open' : 'status-closed' }}">
+                                {{ day.id in servicio.diasTrabajo ? 'Abierto' : 'Cerrado' }}
+                            </span>
+                        </div>
+                        {% if day.id in servicio.diasTrabajo %}
+                            <div class="time-slots-grid">
+                                {% for horario in servicio.horariosDisponibles %}
+                                    <div class="time-slot" data-time="{{ horario }}" data-day="{{ day.name }}">
+                                        <span>{{ horario }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div style="text-align: center; padding: 2rem; color: #6c757d;">
+                                <i class="fas fa-door-closed fa-2x"></i>
+                                <p style="margin-top: 0.5rem; font-weight: 500;">No hay atención este día</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Botón de Reserva -->
+        <div class="reserve-btn-container">
+            <button class="reserve-btn" id="reserveButton" disabled>
+                <i class="fas fa-calendar-check me-2"></i>
+                Confirmar Reserva
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Reserva -->
+<div class="modal-overlay" id="reservationModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <h2 class="modal-title">Confirmar Reserva</h2>
+        <p class="modal-subtitle">Complete sus datos para confirmar el turno</p>
+        
+        <div class="selected-time" id="selectedTimeDisplay">
+            <i class="fas fa-clock me-2"></i>
+            <span id="timeDisplay"></span>
+        </div>
+        
+        {{ form_start(form, {'attr': {'class': 'reserva-form', 'id': 'reservationForm'}}) }}
+        
+        <div class="form-group">
+            {{ form_label(form.usuario_email) }}
+            {{ form_widget(form.usuario_email, {'attr': {
+                'class': 'form-control',
+                'placeholder': 'ejemplo@email.com'
+            }}) }}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.fecha) }}
+            {{ form_widget(form.fecha, {'attr': {
+                'class': 'form-control',
+                'readonly': 'readonly'
+            }}) }}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.hora) }}
+            {{ form_widget(form.hora, {'attr': {
+                'class': 'form-control',
+                'readonly': 'readonly'
+            }}) }}
+        </div>
+        
+        {{ form_widget(form.reservar, {'attr': {
+            'class': 'submit-btn'
+        }}) }}
+        
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+{{ parent() }}
+<script>
+    let selectedTime = null;
+    let selectedDay = null;
+
+    // Seleccionar horario
+    document.querySelectorAll('.time-slot').forEach(slot => {
+        slot.addEventListener('click', function() {
+            // Remover selección anterior
+            document.querySelectorAll('.time-slot').forEach(s => {
+                s.classList.remove('selected');
+            });
+            
+            // Seleccionar nuevo
+            this.classList.add('selected');
+            selectedTime = this.dataset.time;
+            selectedDay = this.dataset.day;
+            
+            // Habilitar botón de reserva
+            document.getElementById('reserveButton').disabled = false;
+        });
+    });
+
+    // Abrir modal de reserva
+    document.getElementById('reserveButton').addEventListener('click', function() {
+        if (selectedTime) {
+            // Mostrar horario seleccionado
+            document.getElementById('timeDisplay').textContent = 
+                `${selectedDay} - ${selectedTime}`;
+            
+            // Llenar campos del formulario
+            document.getElementById('{{ form.hora.vars.id }}').value = selectedTime + ':00';
+            
+            // Mostrar modal
+            document.getElementById('reservationModal').style.display = 'flex';
+        }
+    });
+
+    // Cerrar modal
+    function closeModal() {
+        document.getElementById('reservationModal').style.display = 'none';
+    }
+
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('reservationModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+
+    // Cerrar con ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // Inicializar fecha con hoy
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('{{ form.fecha.vars.id }}').value = today;
+    });
+</script>
+{% endblock %}

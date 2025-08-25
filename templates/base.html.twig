@@ -1,17 +1,100 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TurNow - Sistema de Turnos Premium{% endblock %}</title>
+    
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Estilos base */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Navbar premium */
+        .navbar-premium {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Tarjetas con glassmorphism */
+        .card-glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Botones premium */
+        .btn-premium {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+    </style>
+    
+    {% block css %}{% endblock %}
+</head>
+<body>
+    {% block content %}{% endblock %}
+    
+    <!-- Footer -->
+    {% block footer %}
+        <footer class="bg-dark text-white py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <h5 class="fw-bold mb-3">TurNow</h5>
+                        <p class="text-white-50">Sistema premium de gestión de turnos para profesionales exigentes.</p>
+                    </div>
+                    <div class="col-lg-4">
+                        <h5 class="fw-bold mb-3">Enlaces</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#features" class="text-white-50 text-decoration-none">Funcionalidades</a></li>
+                            <li><a href="#demo" class="text-white-50 text-decoration-none">Demo</a></li>
+                            <li><a href="#pricing" class="text-white-50 text-decoration-none">Precios</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <h5 class="fw-bold mb-3">Contacto</h5>
+                        <p class="text-white-50">
+                            <i class="fas fa-envelope me-2"></i>info@turnow.com<br>
+                            <i class="fas fa-phone me-2"></i>+1 (555) 123-4567
+                        </p>
+                    </div>
+                </div>
+                <hr class="my-4">
+                <div class="text-center">
+                    <p class="text-white-50 mb-0">&copy; 2024 TurNow. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </footer>
+    {% endblock %}
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+    <!-- Bootstrap JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block javascript %}{% endblock %}
+</body>
 </html>

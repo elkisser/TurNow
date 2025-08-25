@@ -1,0 +1,1354 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Diseñador de Páginas - TurNow{% endblock %}
+
+{% block css %}
+{{ parent() }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        --dark-color: #2c3e50;
+        --light-color: #f8f9fa;
+        --border-radius: 12px;
+        --box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f5f7fb;
+        color: #2c3e50;
+        margin: 0;
+        padding: 0;
+    }
+
+    .designer-container {
+        min-height: 100vh;
+        padding: 0;
+    }
+    
+    .designer-header {
+    background: white;
+    padding: 1.5rem 2.5rem;
+    border-bottom: 1px solid #e9ecef;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    z-index: 1000;
+    }
+    
+    .header-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .header-title i {
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 1.8rem;
+    }
+    
+    .header-title h1 {
+        font-weight: 700;
+        font-size: 1.8rem;
+        margin: 0;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .header-actions {
+        display: flex;
+        gap: 12px;
+    }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-primary {
+        background: var(--primary-gradient);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.35);
+    }
+    
+    .btn-secondary {
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+    }
+    
+    .btn-secondary:hover {
+        background: #f0f4ff;
+        transform: translateY(-2px);
+    }
+    
+    .btn-tutorial {
+        background: var(--warning-gradient);
+        color: white;
+    }
+    
+    .btn-tutorial:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(250, 112, 154, 0.35);
+    }
+    
+    .designer-content {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    height: calc(100vh - 80px);
+    margin-top: 80px;
+    }
+    
+    .form-panel {
+        background: white;
+        padding: 2rem;
+        overflow-y: auto;
+        border-right: 1px solid #e9ecef;
+        box-shadow: 5px 0 15px rgba(0,0,0,0.03);
+    }
+    
+    .preview-panel {
+        background: #f8f9fa;
+        padding: 2.5rem;
+        overflow-y: auto;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        position: relative;
+    }
+    
+    .preview-container {
+        position: sticky;
+        top: 2rem;
+        width: 100%;
+        max-width: 1200px;
+    }
+    
+    .page-preview {
+        background: white;
+        width: 100%;
+        min-height: 800px;
+        border-radius: 16px;
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        transition: var(--transition);
+        transform-origin: center top;
+    }
+    
+    .page-preview:hover {
+        box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+    }
+    
+    /* Estilos del formulario */
+    .form-section {
+        margin-bottom: 2.5rem;
+        padding: 1.75rem;
+        background: #f8f9fa;
+        border-radius: var(--border-radius);
+        border-left: 4px solid #667eea;
+        transition: var(--transition);
+    }
+    
+    .form-section:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .section-title i {
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background-color: #f0f4ff;
+    }
+    
+    .form-group {
+        margin-bottom: 1.75rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 0.75rem;
+        display: block;
+        font-size: 0.95rem;
+    }
+    
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 0.875rem 1.25rem;
+        width: 100%;
+        transition: var(--transition);
+        font-size: 0.95rem;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        outline: none;
+    }
+    
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    /* Image Upload */
+    .image-upload {
+        margin-bottom: 1.5rem;
+    }
+    
+    .image-preview {
+        width: 100%;
+        height: 200px;
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+    }
+    
+    .image-preview:hover {
+        border-color: #667eea;
+        background: #f0f4ff;
+    }
+    
+    .image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .upload-text {
+        text-align: center;
+        color: #6c757d;
+        padding: 2rem;
+    }
+    
+    .upload-text i {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        color: #667eea;
+    }
+    
+    .opacity-control {
+        margin-top: 1rem;
+    }
+    
+    .opacity-slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 8px;
+        border-radius: 4px;
+        background: #e9ecef;
+        outline: none;
+    }
+    
+    .opacity-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+    
+    .opacity-value {
+        font-size: 0.875rem;
+        color: #6c757d;
+        text-align: right;
+        margin-top: 0.5rem;
+    }
+    
+    /* Checkbox Groups */
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.875rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-check {
+        background: white;
+        padding: 1rem 1rem 1rem 0.75rem;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        transition: var(--transition);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-check:hover {
+        border-color: #667eea;
+        background: #f8f9ff;
+        transform: translateY(-2px);
+    }
+    
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        margin-right: 0.75rem;
+        cursor: pointer;
+    }
+    
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+    
+    .form-check-label {
+        font-weight: 500;
+        color: #2c3e50;
+        cursor: pointer;
+    }
+    
+    /* Time Slots */
+    .time-slots-container {
+        margin-bottom: 1.5rem;
+    }
+    
+    .time-input-group {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        margin-bottom: 0.875rem;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .time-input {
+        flex: 1;
+    }
+    
+    .remove-time {
+        color: #dc3545;
+        background: none;
+        border: none;
+        width: 42px;
+        height: 42px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+        background: #fff;
+        border: 1px solid #e9ecef;
+    }
+    
+    .remove-time:hover {
+        background: #f8d7da;
+        transform: scale(1.05);
+    }
+    
+    .add-time-btn {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 0.875rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .add-time-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.35);
+    }
+    
+    /* Submit Button */
+    .submit-btn {
+        background: var(--success-gradient);
+        color: white;
+        border: none;
+        padding: 1.25rem 2rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        width: 100%;
+        cursor: pointer;
+        transition: var(--transition);
+        margin-top: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(67, 233, 123, 0.35);
+    }
+    
+    /* Estilos de la página preview */
+    .service-page {
+        font-family: 'Inter', sans-serif;
+        color: #2c3e50;
+    }
+    
+    .page-header {
+        color: white;
+        padding: 5rem 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1;
+    }
+    
+    .header-content {
+        position: relative;
+        z-index: 2;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .page-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+    }
+    
+    .page-description {
+        font-size: 1.3rem;
+        opacity: 0.95;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        font-weight: 400;
+    }
+    
+    .page-content {
+        padding: 4rem 3rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .schedule-section {
+        margin-bottom: 4rem;
+    }
+    
+    .section-heading {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 2.5rem;
+        text-align: center;
+        position: relative;
+        padding-bottom: 15px;
+    }
+    
+    .section-heading::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--primary-gradient);
+        border-radius: 2px;
+    }
+    
+    .schedule-grid {
+        display: grid;
+        gap: 1.75rem;
+        margin-bottom: 2.5rem;
+    }
+    
+    .schedule-day {
+        background: white;
+        padding: 1.75rem;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+        border-left: 4px solid #667eea;
+        transition: var(--transition);
+    }
+    
+    .schedule-day:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    
+    .day-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+    }
+    
+    .day-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    
+    .day-status {
+        padding: 0.5rem 1.25rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .status-open {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-closed {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .time-slots-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .time-slot {
+        background: #e9ecef;
+        padding: 0.875rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        color: #495057;
+        transition: var(--transition);
+    }
+    
+    .time-slot.available {
+        background: var(--primary-gradient);
+        color: white;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .time-slot:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    
+    .no-slots {
+        color: #6c757d;
+        font-style: italic;
+        text-align: center;
+        padding: 2.5rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        width: 100%;
+    }
+    
+    /* Tutorial Modal */
+    .tutorial-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(5px);
+    }
+    
+    .tutorial-content {
+        background: white;
+        width: 90%;
+        max-width: 800px;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    }
+    
+    .tutorial-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .tutorial-header h2 {
+        margin: 0;
+        font-weight: 700;
+    }
+    
+    .close-tutorial {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+    }
+    
+    .close-tutorial:hover {
+        background: rgba(255,255,255,0.2);
+    }
+    
+    .tutorial-steps {
+        padding: 2rem;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    
+    .tutorial-step {
+        margin-bottom: 2.5rem;
+        padding: 1.5rem;
+        border-radius: 12px;
+        background: #f8f9fa;
+        border-left: 4px solid #667eea;
+    }
+    
+    .tutorial-step h3 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 0;
+        color: #2c3e50;
+    }
+    
+    .step-number {
+        background: var(--primary-gradient);
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+    }
+    
+    .tutorial-step p {
+        margin: 1rem 0 0 0;
+        line-height: 1.6;
+        color: #495057;
+    }
+    
+    .tutorial-nav {
+        display: flex;
+        justify-content: space-between;
+        padding: 1.5rem 2rem;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .tutorial-indicators {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    
+    .indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #e9ecef;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .indicator.active {
+        background: #667eea;
+        transform: scale(1.2);
+    }
+    
+    /* Highlight effect for tutorial */
+    .tutorial-highlight {
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.5);
+        animation: pulse 2s infinite;
+        border-radius: 8px;
+        position: relative;
+        z-index: 9999;
+    }
+    
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="designer-container">
+    <!-- Header -->
+    <div class="designer-header">
+        <div class="header-title">
+            <i class="fas fa-palette"></i>
+            <h1>Diseñador de Páginas</h1>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-tutorial" id="tutorialBtn">
+                <i class="fas fa-graduation-cap"></i>Ver Tutorial
+            </button>
+            <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="designer-content">
+        <!-- Panel de Formulario -->
+        <div class="form-panel">
+            {{ form_start(form, {'attr': {'id': 'page-design-form', 'onsubmit': 'return validateForm()'}}) }}
+                <!-- Sección de Información Básica -->
+                <div class="form-section" id="section-basic">
+                    <h3 class="section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Información Básica
+                    </h3>
+                    
+                    <div class="form-group">
+                        {{ form_label(form.nombre, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.nombre, {'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'Nombre de tu servicio',
+                            'oninput': 'updatePagePreview()'
+                        }}) }}
+                        {{ form_errors(form.nombre) }}
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ form_label(form.descripcion, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.descripcion, {'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'Describe tu servicio en detalle...',
+                            'oninput': 'updatePagePreview()',
+                            'rows': 4
+                        }}) }}
+                        {{ form_errors(form.descripcion) }}
+                    </div>
+                </div>
+
+                <!-- Sección de Banner -->
+                <div class="form-section" id="section-banner">
+                    <h3 class="section-title">
+                        <i class="fas fa-image"></i>
+                        Banner Principal
+                    </h3>
+                    
+                    <div class="form-group">
+                        {{ form_label(form.banner_file, null, {'label_attr': {'class': 'form-label'}}) }}
+                        <div class="image-upload">
+                            <div class="image-preview" id="imagePreview" onclick="document.getElementById('{{ form.banner_file.vars.id }}').click()">
+                                <div class="upload-text">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Haz clic para subir un banner</p>
+                                    <small>Recomendado: 1200x400px</small>
+                                </div>
+                            </div>
+                            {{ form_widget(form.banner_file, {'attr': {
+                                'onchange': 'previewImage(event)',
+                                'style': 'display: none;'
+                            }}) }}
+                            {{ form_errors(form.banner_file) }}
+                        </div>
+                        
+                        <div class="opacity-control">
+                            <label class="form-label">Opacidad del Banner</label>
+                            <input type="range" min="0.1" max="1" step="0.1" value="0.5" class="opacity-slider" id="bannerOpacity" oninput="updateBannerOpacity(this.value)">
+                            <div class="opacity-value" id="opacityValue">50%</div>
+                        </div>
+                    </div>
+                    
+                    {{ form_widget(form.banner_url, {'attr': {
+                        'class': 'd-none',
+                        'id': 'bannerUrlInput'
+                    }}) }}
+                </div>
+
+                <!-- Sección de Horarios -->
+                <div class="form-section" id="section-schedule">
+                    <h3 class="section-title">
+                        <i class="fas fa-clock"></i>
+                        Horarios de Atención
+                    </h3>
+                    
+                    <div class="form-group">
+                        {{ form_label(form.dias_trabajo, null, {'label_attr': {'class': 'form-label'}}) }}
+                        <div class="checkbox-grid">
+                            {% for child in form.dias_trabajo %}
+                                <div class="form-check">
+                                    {{ form_widget(child, {'attr': {
+                                        'class': 'form-check-input',
+                                        'onchange': 'updatePagePreview()'
+                                    }}) }}
+                                    {{ form_label(child, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {{ form_errors(form.dias_trabajo) }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Horarios Disponibles</label>
+                        <div class="time-slots-container" id="timeSlotsContainer">
+                            <div class="time-input-group">
+                                <input type="time" class="form-control time-input" onchange="updateTimeSlotsData()">
+                                <button type="button" class="remove-time" onclick="removeTimeSlot(this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="add-time-btn" onclick="addTimeSlot()">
+                            <i class="fas fa-plus"></i>Agregar Horario
+                        </button>
+                    </div>
+                </div>
+
+                {{ form_widget(form.horarios_data, {'attr': {
+                    'id': 'servicio_horarios_data',
+                    'class': 'd-none'
+                }}) }}
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-save"></i>Guardar Página
+                </button>
+
+            {{ form_end(form) }}
+        </div>
+
+        <!-- Panel de Preview -->
+        <div class="preview-panel">
+            <div class="preview-container">
+                <div class="page-preview">
+                    <div class="service-page">
+                        <!-- Header con Banner -->
+                        <div class="page-header" id="pageHeader">
+                            <div class="header-content">
+                                <h1 class="page-title" id="pageTitle">Nombre del Servicio</h1>
+                                <p class="page-description" id="pageDescription">
+                                    Descripción de tu servicio aparecerá aquí. Describe qué hace único tu servicio.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Contenido Principal -->
+                        <div class="page-content">
+                            <!-- Sección de Horarios -->
+                            <div class="schedule-section">
+                                <h2 class="section-heading">Horarios de Atención</h2>
+                                <div class="schedule-grid" id="scheduleGrid">
+                                    <!-- Los horarios se generarán dinámicamente -->
+                                    <div class="schedule-day">
+                                        <div class="day-header">
+                                            <span class="day-name">Lunes</span>
+                                            <span class="day-status status-closed">Cerrado</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sección de Turnos Disponibles -->
+                            <div class="schedule-section">
+                                <h2 class="section-heading">Turnos Disponibles</h2>
+                                <div class="time-slots-grid" id="pageTimeSlots">
+                                    <span class="time-slot available">08:00</span>
+                                    <span class="time-slot available">09:00</span>
+                                    <span class="time-slot available">10:00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tutorial Modal -->
+<div class="tutorial-modal" id="tutorialModal">
+    <div class="tutorial-content">
+        <div class="tutorial-header">
+            <h2><i class="fas fa-graduation-cap me-2"></i>Guía de Diseño de Páginas</h2>
+            <button class="close-tutorial" id="closeTutorial">&times;</button>
+        </div>
+        <div class="tutorial-steps">
+            <div class="tutorial-step" id="step1">
+                <h3><span class="step-number">1</span> Información Básica</h3>
+                <p>Completa el nombre y la descripción de tu servicio. Esta información será visible en la parte superior de tu página y ayudará a los clientes a entender qué ofreces.</p>
+            </div>
+            <div class="tutorial-step" id="step2">
+                <h3><span class="step-number">2</span> Banner Principal</h3>
+                <p>Sube una imagen atractiva para el banner de tu página. Puedes ajustar la opacidad para que el texto sea más legible. Una buena imagen mejora significativamente la apariencia de tu página.</p>
+            </div>
+            <div class="tutorial-step" id="step3">
+                <h3><span class="step-number">3</span> Horarios de Atención</h3>
+                <p>Selecciona los días de la semana en los que estás disponible y agrega los horarios específicos para cada día. Los clientes podrán ver esta información al reservar un turno.</p>
+            </div>
+            <div class="tutorial-step" id="step4">
+                <h3><span class="step-number">4</span> Vista Previa</h3>
+                <p>Utiliza el panel de la derecha para ver cómo quedará tu página. Todos los cambios se actualizan en tiempo real para que puedas ajustar los detalles según sea necesario.</p>
+            </div>
+            <div class="tutorial-step" id="step5">
+                <h3><span class="step-number">5</span> Guardar</h3>
+                <p>Una vez que estés satisfecho con el diseño, haz clic en el botón "Guardar Página" para publicar los cambios. ¡Tu página estará lista para recibir turnos!</p>
+            </div>
+        </div>
+        <div class="tutorial-nav">
+            <button class="btn btn-secondary" id="prevStep"><i class="fas fa-chevron-left"></i> Anterior</button>
+            <div class="tutorial-indicators">
+                <div class="indicator active" data-step="1"></div>
+                <div class="indicator" data-step="2"></div>
+                <div class="indicator" data-step="3"></div>
+                <div class="indicator" data-step="4"></div>
+                <div class="indicator" data-step="5"></div>
+            </div>
+            <button class="btn btn-primary" id="nextStep">Siguiente <i class="fas fa-chevron-right"></i></button>
+            <button class="btn btn-success d-none" id="finishTutorial">Finalizar <i class="fas fa-check"></i></button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block javascript %}
+{{ parent() }}
+<script>
+    // ===== VARIABLES GLOBALES =====
+    let currentTutorialStep = 1;
+    const totalTutorialSteps = 5;
+    let bannerOpacity = 0.5;
+
+    // ===== GESTIÓN DE HORARIOS =====
+    function addTimeSlot() {
+        const container = document.getElementById('timeSlotsContainer');
+        if (!container) return;
+
+        const newSlot = document.createElement('div');
+        newSlot.className = 'time-input-group';
+        newSlot.style.opacity = 0;
+        newSlot.style.transform = 'translateY(-20px)';
+        newSlot.innerHTML = `
+            <input type="time" class="form-control time-input" onchange="updateTimeSlotsData()" oninput="updateTimeSlotsData()">
+            <button type="button" class="remove-time" onclick="removeTimeSlot(this)">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        container.appendChild(newSlot);
+        
+        setTimeout(() => {
+            newSlot.style.transition = 'all 0.3s cubic-bezier(.4,2,.6,1)';
+            newSlot.style.opacity = 1;
+            newSlot.style.transform = 'translateY(0)';
+        }, 10);
+        
+        updateTimeSlotsData();
+    }
+
+    function removeTimeSlot(button) {
+        const timeInputGroups = document.querySelectorAll('.time-input-group');
+        if (timeInputGroups.length > 1) {
+            const element = button.parentElement;
+            element.style.opacity = 0;
+            element.style.transform = 'translateY(-20px)';
+            element.style.transition = 'all 0.3s ease';
+            
+            setTimeout(() => {
+                element.remove();
+                updateTimeSlotsData();
+            }, 300);
+        }
+    }
+
+    function updateTimeSlotsData() {
+        const timeInputs = document.querySelectorAll('.time-input');
+        const horarios = Array.from(timeInputs)
+            .map(input => input.value)
+            .filter(time => time !== '' && time !== null);
+
+        const horariosInput = document.getElementById('servicio_horarios_data');
+        if (horariosInput) {
+            horariosInput.value = JSON.stringify(horarios);
+        } else {
+            console.error('❌ Campo hidden servicio_horarios_data no encontrado');
+        }
+        updateTimeSlotsPreview();
+    }
+
+    // ===== GESTIÓN DEL BANNER =====
+    function previewImage(event) {
+        const input = event.target;
+        const preview = document.getElementById('imagePreview');
+        const urlInput = document.getElementById('bannerUrlInput');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = `<img src="${e.target.result}" alt="Banner preview">`;
+                urlInput.value = e.target.result;
+                updatePageHeader(e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    function updateBannerOpacity(value) {
+        bannerOpacity = parseFloat(value);
+        document.getElementById('opacityValue').textContent = Math.round(bannerOpacity * 100) + '%';
+        // Actualizar la preview del banner en la página
+        const urlInput = document.getElementById('bannerUrlInput');
+        if (urlInput && urlInput.value) {
+            updatePageHeader(urlInput.value);
+        } else {
+            updatePageHeader(null);
+        }
+    }
+    
+    function updatePageHeader(imageUrl) {
+        const header = document.getElementById('pageHeader');
+        // Siempre usar el valor actual del input oculto si existe
+        const urlInput = document.getElementById('bannerUrlInput');
+        if ((!imageUrl || imageUrl === '') && urlInput && urlInput.value) {
+            imageUrl = urlInput.value;
+        }
+        if (header && imageUrl) {
+            header.style.backgroundImage = `linear-gradient(rgba(0,0,0,${1-bannerOpacity}), rgba(0,0,0,${1-bannerOpacity})), url(${imageUrl})`;
+            header.style.backgroundSize = 'cover';
+            header.style.backgroundPosition = 'center';
+        } else if (header) {
+            header.style.backgroundImage = '';
+        }
+    }
+
+    // ===== ACTUALIZACIÓN DE LA VISTA PREVIA =====
+    function updatePagePreview() {
+        updatePageTitle();
+        updatePageDescription();
+        updateSchedule();
+        updateTimeSlotsPreview();
+    }
+    
+    function updatePageTitle() {
+        const titleInput = document.getElementById('{{ form.nombre.vars.id }}');
+        const pageTitle = document.getElementById('pageTitle');
+        if (titleInput && pageTitle) {
+            pageTitle.textContent = titleInput.value || 'Nombre del Servicio';
+        }
+    }
+    
+    function updatePageDescription() {
+        const descInput = document.getElementById('{{ form.descripcion.vars.id }}');
+        const pageDesc = document.getElementById('pageDescription');
+        if (descInput && pageDesc) {
+            pageDesc.textContent = descInput.value || 'Descripción de tu servicio aparecerá aquí. Describe qué hace único tu servicio.';
+        }
+    }
+    
+    function updateSchedule() {
+        const scheduleGrid = document.getElementById('scheduleGrid');
+        if (!scheduleGrid) return;
+        
+        const days = [
+            {id: 1, name: 'Lunes'}, {id: 2, name: 'Martes'}, {id: 3, name: 'Miércoles'},
+            {id: 4, name: 'Jueves'}, {id: 5, name: 'Viernes'}, {id: 6, name: 'Sábado'},
+            {id: 7, name: 'Domingo'}
+        ];
+        
+        scheduleGrid.innerHTML = '';
+        
+        days.forEach(day => {
+            const checkbox = document.getElementById('{{ form.dias_trabajo.vars.id }}_' + (day.id - 1));
+            const isChecked = checkbox ? checkbox.checked : false;
+            
+            const dayElement = document.createElement('div');
+            dayElement.className = 'schedule-day';
+            dayElement.innerHTML = `
+                <div class="day-header">
+                    <span class="day-name">${day.name}</span>
+                    <span class="day-status ${isChecked ? 'status-open' : 'status-closed'}">
+                        ${isChecked ? 'Abierto' : 'Cerrado'}
+                    </span>
+                </div>
+            `;
+            
+            scheduleGrid.appendChild(dayElement);
+        });
+    }
+    
+    function updateTimeSlotsPreview() {
+        const timeSlotsContainer = document.getElementById('pageTimeSlots');
+        if (!timeSlotsContainer) return;
+        
+        const timeInputs = document.querySelectorAll('.time-input');
+        const horarios = Array.from(timeInputs)
+            .map(input => input.value)
+            .filter(time => time !== '' && time !== null);
+            
+        timeSlotsContainer.innerHTML = '';
+        
+        if (horarios.length > 0) {
+            horarios.forEach(horario => {
+                const timeSlot = document.createElement('span');
+                timeSlot.className = 'time-slot available';
+                timeSlot.textContent = horario;
+                timeSlotsContainer.appendChild(timeSlot);
+            });
+        } else {
+            timeSlotsContainer.innerHTML = '<div class="no-slots">No hay horarios configurados</div>';
+        }
+    }
+
+    // ===== VALIDACIÓN DEL FORMULARIO =====
+    function validateForm() {
+        console.log('🔍 Validando formulario...');
+        updateTimeSlotsData();
+        
+        const horariosInput = document.getElementById('servicio_horarios_data');
+        let horarios = [];
+        
+        if (horariosInput && horariosInput.value) {
+            try {
+                horarios = JSON.parse(horariosInput.value);
+            } catch (e) {
+                console.error('Error parsing horarios:', e);
+            }
+        }
+        
+        if (!Array.isArray(horarios) || horarios.length === 0) {
+            alert('❌ Debes agregar al menos un horario disponible');
+            return false;
+        }
+        
+        const nombreInput = document.getElementById('{{ form.nombre.vars.id }}');
+        if (!nombreInput || !nombreInput.value.trim()) {
+            alert('❌ Por favor, ingresa un nombre para el servicio');
+            nombreInput?.focus();
+            return false;
+        }
+        
+        console.log('✅ Validación exitosa');
+        return true;
+    }
+
+    // ===== SISTEMA DE TUTORIAL =====
+    function showTutorial() {
+        const modal = document.getElementById('tutorialModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            goToTutorialStep(1);
+        }
+        // Mostrar solo el primer paso al abrir
+        document.querySelectorAll('.tutorial-step').forEach((stepElement, index) => {
+            stepElement.style.display = (index === 0) ? 'block' : 'none';
+        });
+    }
+    
+    function closeTutorial() {
+        const modal = document.getElementById('tutorialModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+    
+    function goToTutorialStep(step) {
+        if (step < 1) step = 1;
+        if (step > totalTutorialSteps) step = totalTutorialSteps;
+        currentTutorialStep = step;
+        // Actualizar indicadores
+        document.querySelectorAll('.indicator').forEach((indicator, index) => {
+            if (index + 1 === step) {
+                indicator.classList.add('active');
+            } else {
+                indicator.classList.remove('active');
+            }
+        });
+        // Mostrar solo el paso actual
+        document.querySelectorAll('.tutorial-step').forEach((stepElement, index) => {
+            stepElement.style.display = (index + 1 === step) ? 'block' : 'none';
+        });
+        // Resaltar la sección correspondiente en el formulario
+        highlightFormSection(step);
+        // Mostrar/ocultar botón finalizar
+        const nextBtn = document.getElementById('nextStep');
+        const finishBtn = document.getElementById('finishTutorial');
+        if (nextBtn && finishBtn) {
+            if (step === totalTutorialSteps) {
+                nextBtn.classList.add('d-none');
+                finishBtn.classList.remove('d-none');
+            } else {
+                nextBtn.classList.remove('d-none');
+                finishBtn.classList.add('d-none');
+            }
+        }
+    }
+    
+    function highlightFormSection(step) {
+        // Eliminar resaltados anteriores
+        document.querySelectorAll('.tutorial-highlight').forEach(el => {
+            el.classList.remove('tutorial-highlight');
+        });
+        
+        let sectionId = '';
+        switch(step) {
+            case 1:
+                sectionId = 'section-basic';
+                break;
+            case 2:
+                sectionId = 'section-banner';
+                break;
+            case 3:
+                sectionId = 'section-schedule';
+                break;
+        }
+        
+        if (sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.add('tutorial-highlight');
+                
+                // Desplazar hasta la sección
+                section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    }
+    
+    function nextTutorialStep() {
+        goToTutorialStep(currentTutorialStep + 1);
+    }
+    
+    function prevTutorialStep() {
+        goToTutorialStep(currentTutorialStep - 1);
+    }
+
+    // ===== INICIALIZACIÓN =====
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Inicializando diseñador de páginas...');
+        
+        // Inicializar eventos del tutorial
+        document.getElementById('tutorialBtn')?.addEventListener('click', showTutorial);
+        document.getElementById('closeTutorial')?.addEventListener('click', closeTutorial);
+        document.getElementById('nextStep')?.addEventListener('click', nextTutorialStep);
+        document.getElementById('prevStep')?.addEventListener('click', prevTutorialStep);
+        
+        // Eventos para los indicadores del tutorial
+        document.querySelectorAll('.indicator').forEach(indicator => {
+            indicator.addEventListener('click', function() {
+                const step = parseInt(this.getAttribute('data-step'));
+                goToTutorialStep(step);
+            });
+        });
+        
+        // Cerrar tutorial al hacer clic fuera del contenido
+        document.getElementById('tutorialModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeTutorial();
+            }
+        });
+        
+        // Inicializar eventos de los inputs de tiempo
+        document.querySelectorAll('.time-input').forEach(input => {
+            input.addEventListener('change', updateTimeSlotsData);
+            input.addEventListener('input', updateTimeSlotsData);
+        });
+
+        document.getElementById('finishTutorial')?.addEventListener('click', closeTutorial);
+        
+        // Inicializar la vista previa
+        updatePagePreview();
+        
+        // Establecer la opacidad inicial del banner
+        updateBannerOpacity(0.5);
+
+        // Actualizar el encabezado de la página
+        updatePageHeader();
+        
+        console.log('✅ Diseñador inicializado correctamente');
+    });
+
+    // Hacer funciones globales
+    window.addTimeSlot = addTimeSlot;
+    window.removeTimeSlot = removeTimeSlot;
+    window.updateTimeSlotsData = updateTimeSlotsData;
+    window.previewImage = previewImage;
+    window.updateBannerOpacity = updateBannerOpacity;
+    window.updatePagePreview = updatePagePreview;
+    window.validateForm = validateForm;
+</script>
+{% endblock %}
+
