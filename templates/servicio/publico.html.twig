@@ -590,6 +590,12 @@
         <!-- Sección de Horarios -->
         <div class="schedule-section">
             <h2 class="section-heading">📅 Horarios de Atención</h2>
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <div class="week-toggle" style="display:inline-flex; gap:8px;">
+                        <button type="button" id="weekBtn0" class="btn-week active" data-week="0" style="padding:8px 14px; border-radius:8px; border:1px solid #e9ecef; background:#fff; cursor:pointer;">Semana actual</button>
+                        <button type="button" id="weekBtn1" class="btn-week" data-week="1" style="padding:8px 14px; border-radius:8px; border:1px solid #e9ecef; background:#fff; cursor:pointer;">Semana siguiente</button>
+                    </div>
+                </div>
             <div class="schedule-grid">
                 {% set days = [
                     {id: 1, name: 'Lunes', icon: 'fas fa-calendar-day'},
@@ -707,6 +713,13 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 <script>
+    // Datos del servidor: turnos reservados y fechas por semana
+    const reserved = {{ reserved|default({})|json_encode()|raw }};
+    const weekDates = {{ weekDates|default({0:[],1:[]})|json_encode()|raw }};
+    let selectedWeek = 0; // 0 = semana actual, 1 = siguiente
+
+    // Estilos para slots deshabilitados
+    const disabledClass = 'disabled';
     let selectedTime = null;
     let selectedDay = null;
     let selectedDayId = null;
@@ -728,56 +741,61 @@
     // Obtener la fecha actual en horario de Argentina
     const today = new Date(new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }));
         flatpickrInstance.setDate(today);
+    // Marcar disponibilidad inicial
+    renderSlotsAvailability();
     });
 
-    // Seleccionar horario
-    document.querySelectorAll('.time-slot').forEach(slot => {
-        slot.addEventListener('click', function() {
-            // Remover selección anterior
-            document.querySelectorAll('.time-slot').forEach(s => {
-                s.classList.remove('selected');
-            });
-            
-            // Seleccionar nuevo
-            this.classList.add('selected');
-            selectedTime = this.dataset.time;
-            selectedDay = this.dataset.day;
-            selectedDayId = parseInt(this.dataset.dayId);
-            
-            // Habilitar botón de reserva
-            document.getElementById('reserveButton').disabled = false;
-            
-            // Calcular y establecer la fecha correspondiente al día seleccionado
-            setDateForSelectedDay();
+    // Seleccionar horario (respetando deshabilitados)
+    function attachSlotListeners() {
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            slot.onclick = function() {
+                if (slot.classList.contains(disabledClass)) return; // no permitir selección
+
+                // Remover selección anterior
+                document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+
+                // Seleccionar nuevo
+                slot.classList.add('selected');
+                selectedTime = slot.dataset.time;
+                selectedDay = slot.dataset.day;
+                selectedDayId = parseInt(slot.dataset.dayId);
+
+                // Habilitar botón de reserva
+                document.getElementById('reserveButton').disabled = false;
+
+                // Calcular y establecer la fecha correspondiente al día seleccionado y semana
+                setDateForSelectedDay();
+            };
         });
-    });
+    }
+    attachSlotListeners();
 
     // Calcular la fecha para el día seleccionado
     function setDateForSelectedDay() {
-        const today = new Date();
-        const currentDay = today.getDay(); // 0 (Domingo) a 6 (Sábado)
-        
-        // Ajustar para que coincida con nuestro sistema (1=Lunes, 7=Domingo)
-        const adjustedCurrentDay = currentDay === 0 ? 7 : currentDay;
-        
-        // Calcular diferencia de días
-        let daysToAdd = selectedDayId - adjustedCurrentDay;
-        if (daysToAdd < 0) {
-            daysToAdd += 7; // Si es un día de la semana anterior, sumar 7 días
+        if (!selectedDayId) return;
+
+        // Usar weekDates calculadas en el servidor si están disponibles
+        let formattedDate = null;
+        if (typeof weekDates !== 'undefined' && weekDates[selectedWeek] && weekDates[selectedWeek][selectedDayId]) {
+            formattedDate = weekDates[selectedWeek][selectedDayId];
+        } else {
+            // Fallback: calcular desde hoy
+            const today = new Date();
+            const currentDay = today.getDay(); // 0 (Domingo) a 6 (Sábado)
+            const adjustedCurrentDay = currentDay === 0 ? 7 : currentDay;
+            let daysToAdd = selectedDayId - adjustedCurrentDay;
+            if (selectedWeek === 1 && daysToAdd >= 0) daysToAdd += 7;
+            if (selectedWeek === 1 && daysToAdd < 0) daysToAdd += 7;
+            const targetDate = new Date(today);
+            targetDate.setDate(today.getDate() + daysToAdd);
+            formattedDate = targetDate.toISOString().split('T')[0];
         }
-        
-        // Calcular la fecha objetivo
-        const targetDate = new Date(today);
-        targetDate.setDate(today.getDate() + daysToAdd);
-        
-        // Formatear fecha como YYYY-MM-DD
-        const formattedDate = targetDate.toISOString().split('T')[0];
-        
+
         // Establecer la fecha en el calendario
-        if (flatpickrInstance) {
+        if (flatpickrInstance && formattedDate) {
             flatpickrInstance.setDate(formattedDate);
         }
-        
+
         // Actualizar campo de fecha en el formulario
         document.getElementById('{{ form.fecha.vars.id }}').value = formattedDate;
     }
@@ -811,7 +829,8 @@
     document.getElementById('reserveButton').addEventListener('click', function() {
         if (selectedTime) {
             // Actualizar campos del formulario
-            document.getElementById('{{ form.hora.vars.id }}').value = selectedTime;
+            // Añadir segundos para compatibilidad con TimeType
+            document.getElementById('{{ form.hora.vars.id }}').value = selectedTime + ':00';
             updateTimeDisplay();
             
             // Mostrar modal
@@ -851,24 +870,65 @@
         }, 5000);
     }
 
-    // Manejar envío del formulario
+    // Manejar envío del formulario: permitir envío normal, deshabilitar botón para evitar doble envío
     document.getElementById('reservationForm').addEventListener('submit', function(e) {
-        // Aquí iría la lógica para enviar el formulario via AJAX o procesamiento normal
-        // Por ahora, simulamos un envío exitoso
-        
-        closeModal();
-        showConfirmation('¡Reserva confirmada con éxito!');
-        
-        // Reiniciar selección
-        document.querySelectorAll('.time-slot').forEach(s => {
-            s.classList.remove('selected');
-        });
-        document.getElementById('reserveButton').disabled = true;
-        selectedTime = null;
-        selectedDay = null;
-        
-        // También podrías enviar el formulario de manera tradicional quitando el preventDefault()
-        // this.submit();
+        const submitBtn = this.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+        // Dejar que el formulario se envíe normalmente; la verificación contra duplicados la hace el servidor.
     });
+
+    // Renderizar disponibilidad marcando slots reservados
+    function renderSlotsAvailability() {
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            const time = slot.dataset.time; // formato 'HH:MM' esperado
+            const dayId = parseInt(slot.dataset.dayId);
+
+            // Determinar la fecha objetivo según la semana seleccionada
+            let dateForDay = null;
+            if (typeof weekDates !== 'undefined' && weekDates[selectedWeek] && weekDates[selectedWeek][dayId]) {
+                dateForDay = weekDates[selectedWeek][dayId];
+            }
+
+            // Comprobar si está reservado
+            let isReserved = false;
+            if (dateForDay && reserved && reserved[dateForDay]) {
+                // reserved[date] es array de strings 'HH:MM'
+                if (reserved[dateForDay].includes(time)) {
+                    isReserved = true;
+                }
+            }
+
+            if (isReserved) {
+                slot.classList.add(disabledClass);
+                slot.setAttribute('aria-disabled', 'true');
+                slot.style.pointerEvents = 'none';
+            } else {
+                slot.classList.remove(disabledClass);
+                slot.removeAttribute('aria-disabled');
+                slot.style.pointerEvents = '';
+            }
+        });
+    }
+
+    // Manejar cambio de semana
+    document.querySelectorAll('.btn-week').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.btn-week').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            selectedWeek = parseInt(this.dataset.week);
+            // Re-renderizar disponibilidad
+            renderSlotsAvailability();
+            // Si hay una selección activa, recalcular la fecha para esa selección
+            if (selectedDayId) setDateForSelectedDay();
+        });
+    });
+
+    // Estilo CSS dinámico para disabled
+    (function injectDisabledStyles(){
+        const css = `.time-slot.disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; color: #6c757d; }`;
+        const style = document.createElement('style');
+        style.appendChild(document.createTextNode(css));
+        document.head.appendChild(style);
+    })();
 </script>
 {% endblock %}

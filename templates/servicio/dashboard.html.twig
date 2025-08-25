@@ -1,0 +1,614 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - TurNow{% endblock %}
+
+{% block css %}
+{{ parent() }}
+<style>
+    .dashboard-container {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        min-height: 100vh;
+        padding-top: 80px;
+    }
+    
+    .sidebar {
+        background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 280px;
+        padding-top: 80px;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+    }
+    
+    .main-content {
+        margin-left: 280px;
+        padding: 2rem;
+    }
+    
+    .navbar-premium {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .nav-link-sidebar {
+        color: #b8c2cc !important;
+        padding: 0.75rem 1.5rem;
+        margin: 0.25rem 1rem;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        text-decoration: none !important;
+    }
+    
+    .nav-link-sidebar:hover,
+    .nav-link-sidebar.active {
+        background: rgba(255,255,255,0.1);
+        color: white !important;
+        transform: translateX(5px);
+        text-decoration: none !important;
+    }
+    
+    .nav-link-sidebar i {
+        width: 24px;
+        margin-right: 0.75rem;
+    }
+    
+    .chart-container {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        height: 100%;
+    }
+    
+    .recent-activity {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        height: 100%;
+    }
+    
+    .activity-item {
+        border-left: 3px solid #667eea;
+        padding-left: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .gradient-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .gradient-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .gradient-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .gradient-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    
+    .text-gradient-1 { color: #667eea; }
+    .text-gradient-2 { color: #f5576c; }
+    .text-gradient-3 { color: #4facfe; }
+    .text-gradient-4 { color: #43e97b; }
+    
+    /* Tutorial Styles */
+    .tutorial-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .tutorial-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 2.5rem;
+        max-width: 500px;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .tutorial-step {
+        display: none;
+    }
+    
+    .tutorial-step.active {
+        display: block;
+    }
+    
+    .tutorial-navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+        gap: 1rem;
+    }
+    
+    .tutorial-progress {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        gap: 0.5rem;
+    }
+    
+    .progress-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .progress-dot.active {
+        background: white;
+        transform: scale(1.2);
+    }
+    
+    .tutorial-highlight {
+        position: absolute;
+        border: 3px solid #667eea;
+        border-radius: 15px;
+        background: rgba(102, 126, 234, 0.1);
+        z-index: 10000;
+        pointer-events: none;
+        box-shadow: 0 0 0 9999px rgba(0,0,0,0.7);
+    }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 100%;
+            left: -100%;
+            transition: left 0.3s ease;
+        }
+        
+        .sidebar.show {
+            left: 0;
+        }
+        
+        .main-content {
+            margin-left: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Tutorial Overlay -->
+    <div class="tutorial-overlay" id="tutorialOverlay">
+        <div class="tutorial-card">
+            <div class="tutorial-progress">
+                <div class="progress-dot active"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+            </div>
+            
+            <div class="tutorial-step active" id="step1">
+                <h3>🎉 ¡Bienvenido a TurNow Premium!</h3>
+                <p>Tu centro de control para la gestión inteligente de turnos. Te guiaremos por cada sección.</p>
+                <div class="tutorial-navigation">
+                    <button class="btn btn-outline-light" onclick="tutorialSkip()">Omitir</button>
+                    <button class="btn btn-light" onclick="tutorialNext()">Comenzar Tour →</button>
+                </div>
+            </div>
+            
+            <div class="tutorial-step" id="step2">
+                <h3>📊 Panel de Estadísticas en Tiempo Real</h3>
+                <p>Mira tus métricas clave: servicios activos, total de turnos, reservas confirmadas y disponibilidad.</p>
+                <div class="tutorial-navigation">
+                    <button class="btn btn-outline-light" onclick="tutorialPrev()">← Anterior</button>
+                    <button class="btn btn-light" onclick="tutorialNext()">Siguiente →</button>
+                </div>
+            </div>
+            
+            <div class="tutorial-step" id="step3">
+                <h3>📈 Gráfico Interactivo de Reservas</h3>
+                <p>Visualiza el flujo de tus reservas diarias. Identifica tus días y horas más populares.</p>
+                <div class="tutorial-navigation">
+                    <button class="btn btn-outline-light" onclick="tutorialPrev()">← Anterior</button>
+                    <button class="btn btn-light" onclick="tutorialNext()">Siguiente →</button>
+                </div>
+            </div>
+            
+            <div class="tutorial-step" id="step4">
+                <h3>🔔 Actividad Reciente en Tiempo Real</h3>
+                <p>Monitorea todas las acciones: nuevas reservas, cancelaciones y actividad del sistema.</p>
+                <div class="tutorial-navigation">
+                    <button class="btn btn-outline-light" onclick="tutorialPrev()">← Anterior</button>
+                    <button class="btn btn-light" onclick="tutorialNext()">Siguiente →</button>
+                </div>
+            </div>
+            
+            <div class="tutorial-step" id="step5">
+                <h3>🎯 Gestión de Servicios</h3>
+                <p>Crea y administra todos tus servicios desde aquí. Cada servicio tiene su propia configuración.</p>
+                <div class="tutorial-navigation">
+                    <button class="btn btn-outline-light" onclick="tutorialPrev()">← Anterior</button>
+                    <button class="btn btn-light" onclick="tutorialNext()">Siguiente →</button>
+                </div>
+            </div>
+            
+            <div class="tutorial-step" id="step6">
+                <h3>🧭 Navegación Intuitiva</h3>
+                <p>Accede a todas las funciones desde el menú lateral: Servicios, Turnos, Reportes y Configuración.</p>
+                <div class="tutorial-navigation">
+                    <button class="btn btn-outline-light" onclick="tutorialPrev()">← Anterior</button>
+                    <button class="btn btn-light" onclick="tutorialFinish()">¡Empezar a usar! 🚀</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="text-center mb-4">
+            <div class="rounded-circle bg-white p-2 d-inline-flex align-items-center justify-content-center mb-2" style="width: 80px; height: 80px;">
+                <i class="fas fa-user-circle fa-3x text-primary"></i>
+            </div>
+            <h5 class="mb-1">{{ app.user.nombre }}</h5>
+            <small class="text-white-50">{{ app.user.email }}</small>
+        </div>
+        
+        <nav class="nav flex-column">
+            <a class="nav-link-sidebar active" href="#">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a class="nav-link-sidebar" href="{{ path('admin_servicios') }}">
+                <i class="fas fa-calendar"></i> Servicios
+            </a>
+            <a class="nav-link-sidebar" href="{{ path('admin_turnos') }}">
+                <i class="fas fa-clock"></i> Turnos
+            </a>
+            <a class="nav-link-sidebar" href="#">
+                <i class="fas fa-chart-bar"></i> Reportes
+            </a>
+            <a class="nav-link-sidebar" href="#">
+                <i class="fas fa-cog"></i> Configuración
+            </a>
+            <a class="nav-link-sidebar" href="#" id="showTutorialBtn">
+                <i class="fas fa-graduation-cap"></i> Ver Tutorial
+            </a>
+            <a class="nav-link-sidebar" href="{{ path('app_logout') }}">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0 text-dark">Dashboard</h1>
+                <p class="text-muted mb-0">Bienvenido de vuelta, {{ app.user.nombre }}</p>
+            </div>
+            <a href="{{ path('admin_servicios') }}" class="btn btn-premium">
+                <i class="fas fa-plus me-2"></i>Nuevo Servicio
+            </a>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon gradient-1 text-white">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                    <h3 class="fw-bold text-gradient-1">{{ estadisticas.total_servicios|default(0) }}</h3>
+                    <p class="text-muted mb-0">Servicios Activos</p>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon gradient-2 text-white">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 class="fw-bold text-gradient-2">{{ estadisticas.total_turnos|default(0) }}</h3>
+                    <p class="text-muted mb-0">Total Turnos</p>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon gradient-3 text-white">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 class="fw-bold text-gradient-3">{{ estadisticas.turnos_reservados|default(0) }}</h3>
+                    <p class="text-muted mb-0">Reservados</p>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon gradient-4 text-white">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="fw-bold text-gradient-4">{{ estadisticas.turnos_disponibles|default(0) }}</h3>
+                    <p class="text-muted mb-0">Disponibles</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts and Activities -->
+        <div class="row g-4">
+            <!-- Chart Section -->
+            <div class="col-xl-8">
+                <div class="chart-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">Reservas por Día (Últimos 7 días)</h5>
+                    </div>
+                    <div style="height: 300px;">
+                        <canvas id="reservationsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="col-xl-4">
+                <div class="recent-activity">
+                    <h5 class="mb-4">Actividad Reciente</h5>
+                    
+                    {% if actividad_reciente|length > 0 %}
+                        {% for actividad in actividad_reciente %}
+                        <div class="activity-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">
+                                        {% if actividad.tipo == 'reserva' %}
+                                            Nueva reserva
+                                        {% else %}
+                                            Turno disponible
+                                        {% endif %}
+                                    </h6>
+                                    <p class="text-muted mb-0">Servicio: {{ actividad.servicio }}</p>
+                                    {% if actividad.cliente %}
+                                    <p class="text-muted mb-0">Cliente: {{ actividad.cliente }}</p>
+                                    {% endif %}
+                                    <small class="text-muted">
+                                        {{ actividad.fecha|date('d/m/Y') }} a las {{ actividad.hora|date('H:i') }}
+                                    </small>
+                                </div>
+                                <span class="badge bg-{{ actividad.tipo == 'reserva' ? 'success' : 'info' }}">
+                                    {{ actividad.tipo == 'reserva' ? 'Reserva' : 'Disponible' }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-0">No hay actividad reciente</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Services List -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="chart-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">Mis Servicios</h5>
+                        <a href="{{ path('admin_servicios') }}" class="btn btn-sm btn-outline-primary">
+                            Ver todos
+                        </a>
+                    </div>
+                    
+                    {% if servicios|length > 0 %}
+                        <div class="row">
+                            {% for servicio in servicios|slice(0, 3) %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ servicio.nombre }}</h6>
+                                        <p class="card-text text-muted small">
+                                            {{ servicio.descripcion|length > 100 ? servicio.descripcion|slice(0, 100) ~ '...' : servicio.descripcion }}
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-primary">
+                                                {{ servicio.turnos|length }} turnos
+                                            </span>
+                                            <a href="{{ path('servicio_publico', {'id': servicio.id}) }}" 
+                                            class="btn btn-sm btn-outline-primary" 
+                                            target="_blank">
+                                                Ver
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        {% if servicios|length > 3 %}
+                        <div class="text-center mt-4">
+                            <a href="{{ path('mis_servicios') }}" class="btn btn-outline-primary">
+                                Ver todos mis servicios ({{ servicios|length }})
+                            </a>
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar-plus fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No tienes servicios aún</h5>
+                            <p class="text-muted">Crea tu primer servicio para comenzar a recibir turnos</p>
+                            <a href="{{ path('admin_servicios') }}" class="btn btn-premium">
+                                Crear Primer Servicio
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block javascript %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Variables globales
+    let currentTutorialStep = 1;
+    
+    // Datos reales para el gráfico
+    const chartData = {
+        labels: {{ datos_grafica.labels|json_encode|raw }},
+        data: {{ datos_grafica.data|json_encode|raw }}
+    };
+
+    // Inicializar Chart.js
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('reservationsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [{
+                    label: 'Reservas',
+                    data: chartData.data,
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Event listener para el botón de tutorial
+        const tutorialBtn = document.getElementById('showTutorialBtn');
+        if (tutorialBtn) {
+            tutorialBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                tutorialStart();
+            });
+        }
+    });
+
+    // Funciones del tutorial
+    function tutorialStart() {
+        const overlay = document.getElementById('tutorialOverlay');
+        if (overlay) {
+            overlay.style.display = 'flex';
+            currentTutorialStep = 1;
+            tutorialShowStep(1);
+        }
+    }
+
+    function tutorialShowStep(step) {
+        // Ocultar todos los pasos
+        document.querySelectorAll('.tutorial-step').forEach(el => {
+            el.classList.remove('active');
+        });
+        
+        // Mostrar paso actual
+        const stepElement = document.getElementById('step' + step);
+        if (stepElement) {
+            stepElement.classList.add('active');
+        }
+        
+        // Actualizar puntos de progreso
+        document.querySelectorAll('.progress-dot').forEach((dot, index) => {
+            dot.classList.toggle('active', index === step - 1);
+        });
+        
+        currentTutorialStep = step;
+    }
+
+    function tutorialNext() {
+        if (currentTutorialStep < 6) {
+            tutorialShowStep(currentTutorialStep + 1);
+        } else {
+            tutorialFinish();
+        }
+    }
+
+    function tutorialPrev() {
+        if (currentTutorialStep > 1) {
+            tutorialShowStep(currentTutorialStep - 1);
+        }
+    }
+
+    function tutorialSkip() {
+        const overlay = document.getElementById('tutorialOverlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+    }
+
+    function tutorialFinish() {
+        const overlay = document.getElementById('tutorialOverlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+        // Aquí puedes agregar una llamada AJAX para marcar el tutorial como completado
+        fetch('/admin/tutorial-completed', { method: 'POST' });
+    }
+
+    // Hacer funciones globales para los onclick
+    window.tutorialStart = tutorialStart;
+    window.tutorialNext = tutorialNext;
+    window.tutorialPrev = tutorialPrev;
+    window.tutorialSkip = tutorialSkip;
+    window.tutorialFinish = tutorialFinish;
+</script>
+{% endblock %}

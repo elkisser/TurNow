@@ -1,614 +1,1139 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard - TurNow{% endblock %}
+{% block title %}TurNow - Dashboard Administrador{% endblock %}
 
 {% block css %}
-{{ parent() }}
-<style>
-    .dashboard-container {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        min-height: 100vh;
-        padding-top: 80px;
-    }
-    
-    .sidebar {
-        background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-        color: white;
-        height: 100vh;
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 280px;
-        padding-top: 80px;
-        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-        z-index: 1000;
-    }
-    
-    .main-content {
-        margin-left: 280px;
-        padding: 2rem;
-    }
-    
-    .navbar-premium {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-    }
-    
-    .stat-card {
-        background: white;
-        border-radius: 16px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-        border: none;
-    }
-    
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-    }
-    
-    .stat-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-    }
-    
-    .nav-link-sidebar {
-        color: #b8c2cc !important;
-        padding: 0.75rem 1.5rem;
-        margin: 0.25rem 1rem;
-        border-radius: 12px;
-        transition: all 0.3s ease;
-        text-decoration: none !important;
-    }
-    
-    .nav-link-sidebar:hover,
-    .nav-link-sidebar.active {
-        background: rgba(255,255,255,0.1);
-        color: white !important;
-        transform: translateX(5px);
-        text-decoration: none !important;
-    }
-    
-    .nav-link-sidebar i {
-        width: 24px;
-        margin-right: 0.75rem;
-    }
-    
-    .chart-container {
-        background: white;
-        border-radius: 16px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        height: 100%;
-    }
-    
-    .recent-activity {
-        background: white;
-        border-radius: 16px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        height: 100%;
-    }
-    
-    .activity-item {
-        border-left: 3px solid #667eea;
-        padding-left: 1rem;
-        margin-bottom: 1rem;
-    }
-    
-    .gradient-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-    .gradient-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-    .gradient-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-    .gradient-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-    
-    .text-gradient-1 { color: #667eea; }
-    .text-gradient-2 { color: #f5576c; }
-    .text-gradient-3 { color: #4facfe; }
-    .text-gradient-4 { color: #43e97b; }
-    
-    /* Tutorial Styles */
-    .tutorial-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.9);
-        z-index: 9999;
-        display: none;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .tutorial-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 20px;
-        padding: 2.5rem;
-        max-width: 500px;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .tutorial-step {
-        display: none;
-    }
-    
-    .tutorial-step.active {
-        display: block;
-    }
-    
-    .tutorial-navigation {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 2rem;
-        gap: 1rem;
-    }
-    
-    .tutorial-progress {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 1.5rem;
-        gap: 0.5rem;
-    }
-    
-    .progress-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.3);
-        transition: all 0.3s ease;
-    }
-    
-    .progress-dot.active {
-        background: white;
-        transform: scale(1.2);
-    }
-    
-    .tutorial-highlight {
-        position: absolute;
-        border: 3px solid #667eea;
-        border-radius: 15px;
-        background: rgba(102, 126, 234, 0.1);
-        z-index: 10000;
-        pointer-events: none;
-        box-shadow: 0 0 0 9999px rgba(0,0,0,0.7);
-    }
-
-    @media (max-width: 768px) {
-        .sidebar {
-            width: 100%;
-            left: -100%;
-            transition: left 0.3s ease;
+    {{ parent() }}
+    <style>
+        :root {
+            --primary: #6c63ff;
+            --secondary: #ff6584;
+            --accent: #42b883;
+            --dark: #2c2c6c;
+            --light: #f8f9fa;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
         }
         
-        .sidebar.show {
+        .sidebar {
+            background: linear-gradient(180deg, var(--dark) 0%, #1a1a4c 100%);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
             left: 0;
+            width: 280px;
+            padding-top: 80px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 14px 25px;
+            margin: 6px 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: all 0.5s ease;
+        }
+        
+        .sidebar .nav-link:hover::before,
+        .sidebar .nav-link.active::before {
+            left: 100%;
+        }
+        
+        .sidebar .nav-link:hover, 
+        .sidebar .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+        
+        .sidebar-brand {
+            padding: 20px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
         }
         
         .main-content {
-            margin-left: 0;
+            margin-left: 280px;
+            padding: 30px;
+            padding-top: 100px;
+            min-height: 100vh;
+            background: #f8fafc;
         }
-    }
-</style>
+        
+        .navbar-admin {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            padding: 18px 30px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 280px;
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s ease;
+            height: 100%;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.03) 0%, rgba(255, 101, 132, 0.03) 100%);
+            z-index: 0;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card.warning {
+            border-left: 4px solid var(--warning);
+        }
+        
+        .stat-card.danger {
+            border-left: 4px solid var(--danger);
+        }
+        
+        .stat-card.success {
+            border-left: 4px solid var(--success);
+        }
+        
+        .stat-card.premium {
+            border-left: 4px solid var(--primary);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+        }
+        
+        .stat-card.warning .stat-icon {
+            background: linear-gradient(135deg, var(--warning) 0%, #ff8c00 100%);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+        }
+        
+        .stat-card.danger .stat-icon {
+            background: linear-gradient(135deg, var(--danger) 0%, #b02a37 100%);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .stat-card.success .stat-icon {
+            background: linear-gradient(135deg, var(--success) 0%, #1e7e34 100%);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s ease;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background: white;
+            border-bottom: 1px solid #f1f1f1;
+            padding: 20px 25px;
+            border-radius: 20px 20px 0 0 !important;
+            font-weight: 600;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: #495057;
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .table td {
+            padding: 15px;
+            vertical-align: middle;
+            border-color: #f1f1f1;
+        }
+        
+        .table tr {
+            transition: all 0.3s ease;
+        }
+        
+        .table tr:hover {
+            background-color: #f8fafc;
+            transform: translateX(5px);
+        }
+        
+        .badge-plan {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-basico {
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.15) 0%, rgba(108, 99, 255, 0.05) 100%);
+            color: var(--primary);
+            border: 1px solid rgba(108, 99, 255, 0.2);
+        }
+        
+        .badge-profesional {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(255, 193, 7, 0.05) 100%);
+            color: var(--warning);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+        
+        .badge-empresa {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.15) 0%, rgba(40, 167, 69, 0.05) 100%);
+            color: var(--success);
+            border: 1px solid rgba(40, 167, 69, 0.2);
+        }
+        
+        .btn-action {
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-edit {
+            background: linear-gradient(135deg, rgba(58, 134, 255, 0.15) 0%, rgba(58, 134, 255, 0.05) 100%);
+            color: #3a86ff;
+            border: 1px solid rgba(58, 134, 255, 0.2);
+        }
+        
+        .btn-edit:hover {
+            background: #3a86ff;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(58, 134, 255, 0.3);
+        }
+        
+        .btn-delete {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.15) 0%, rgba(220, 53, 69, 0.05) 100%);
+            color: var(--danger);
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+        
+        .btn-delete:hover {
+            background: var(--danger);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(220, 53, 69, 0.3);
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress {
+            height: 10px;
+            border-radius: 10px;
+            background: #f1f1f1;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            border-radius: 10px;
+        }
+        
+        .subscription-days {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        .days-warning {
+            color: var(--warning);
+        }
+        
+        .days-danger {
+            color: var(--danger);
+        }
+        
+        .days-success {
+            color: var(--success);
+        }
+        
+        .modal-content {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid #f1f1f1;
+            padding: 20px 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #f1f3f5 100%);
+        }
+        
+        .modal-footer {
+            border-top: 1px solid #f1f1f1;
+            padding: 20px 25px;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 12px;
+            padding: 12px 18px;
+            border: 1px solid #e1e1e1;
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.15);
+        }
+        
+        .btn-premium {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+        }
+        
+        .btn-premium:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(108, 99, 255, 0.4);
+            color: white;
+        }
+        
+        .plan-card {
+            border: 2px solid #f1f1f1;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .plan-card:hover, .plan-card.selected {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(108, 99, 255, 0.1);
+        }
+        
+        .plan-card.selected {
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.05) 0%, rgba(255, 101, 132, 0.05) 100%);
+        }
+        
+        .duration-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 12px;
+            margin: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .duration-badge:hover, .duration-badge.selected {
+            background: var(--primary);
+            color: white;
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                left: -280px;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .navbar-admin {
+                left: 0;
+            }
+            
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+            }
+            
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+        
+        .floating-notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            border-radius: 15px;
+            padding: 15px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        
+        .floating-notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--success);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+        
+        .search-box {
+            position: relative;
+            max-width: 300px;
+        }
+        
+        .search-box .form-control {
+            border-radius: 50px;
+            padding-left: 45px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        
+        .filter-dropdown .dropdown-menu {
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        
+        .filter-dropdown .form-check {
+            margin-bottom: 10px;
+        }
+        
+        .stats-change {
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .stats-change.positive {
+            color: var(--success);
+        }
+        
+        .stats-change.negative {
+            color: var(--danger);
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
-    <!-- Tutorial Overlay -->
-    <div class="tutorial-overlay" id="tutorialOverlay">
-        <div class="tutorial-card">
-            <div class="tutorial-progress">
-                <div class="progress-dot active"></div>
-                <div class="progress-dot"></div>
-                <div class="progress-dot"></div>
-                <div class="progress-dot"></div>
-                <div class="progress-dot"></div>
-                <div class="progress-dot"></div>
-            </div>
-            
-            <div class="tutorial-step active" id="step1">
-                <h3>🎉 ¡Bienvenido a TurNow Premium!</h3>
-                <p>Tu centro de control para la gestión inteligente de turnos. Te guiaremos por cada sección.</p>
-                <div class="tutorial-navigation">
-                    <button class="btn btn-outline-light" onclick="tutorialSkip()">Omitir</button>
-                    <button class="btn btn-light" onclick="tutorialNext()">Comenzar Tour →</button>
-                </div>
-            </div>
-            
-            <div class="tutorial-step" id="step2">
-                <h3>📊 Panel de Estadísticas en Tiempo Real</h3>
-                <p>Mira tus métricas clave: servicios activos, total de turnos, reservas confirmadas y disponibilidad.</p>
-                <div class="tutorial-navigation">
-                    <button class="btn btn-outline-light" onclick="tutorialPrev()">← Anterior</button>
-                    <button class="btn btn-light" onclick="tutorialNext()">Siguiente →</button>
-                </div>
-            </div>
-            
-            <div class="tutorial-step" id="step3">
-                <h3>📈 Gráfico Interactivo de Reservas</h3>
-                <p>Visualiza el flujo de tus reservas diarias. Identifica tus días y horas más populares.</p>
-                <div class="tutorial-navigation">
-                    <button class="btn btn-outline-light" onclick="tutorialPrev()">← Anterior</button>
-                    <button class="btn btn-light" onclick="tutorialNext()">Siguiente →</button>
-                </div>
-            </div>
-            
-            <div class="tutorial-step" id="step4">
-                <h3>🔔 Actividad Reciente en Tiempo Real</h3>
-                <p>Monitorea todas las acciones: nuevas reservas, cancelaciones y actividad del sistema.</p>
-                <div class="tutorial-navigation">
-                    <button class="btn btn-outline-light" onclick="tutorialPrev()">← Anterior</button>
-                    <button class="btn btn-light" onclick="tutorialNext()">Siguiente →</button>
-                </div>
-            </div>
-            
-            <div class="tutorial-step" id="step5">
-                <h3>🎯 Gestión de Servicios</h3>
-                <p>Crea y administra todos tus servicios desde aquí. Cada servicio tiene su propia configuración.</p>
-                <div class="tutorial-navigation">
-                    <button class="btn btn-outline-light" onclick="tutorialPrev()">← Anterior</button>
-                    <button class="btn btn-light" onclick="tutorialNext()">Siguiente →</button>
-                </div>
-            </div>
-            
-            <div class="tutorial-step" id="step6">
-                <h3>🧭 Navegación Intuitiva</h3>
-                <p>Accede a todas las funciones desde el menú lateral: Servicios, Turnos, Reportes y Configuración.</p>
-                <div class="tutorial-navigation">
-                    <button class="btn btn-outline-light" onclick="tutorialPrev()">← Anterior</button>
-                    <button class="btn btn-light" onclick="tutorialFinish()">¡Empezar a usar! 🚀</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay"></div>
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <div class="text-center mb-4">
-            <div class="rounded-circle bg-white p-2 d-inline-flex align-items-center justify-content-center mb-2" style="width: 80px; height: 80px;">
-                <i class="fas fa-user-circle fa-3x text-primary"></i>
-            </div>
-            <h5 class="mb-1">{{ app.user.nombre }}</h5>
-            <small class="text-white-50">{{ app.user.email }}</small>
+        <div class="sidebar-brand">
+            <h4 class="text-white mb-0">TurNow Admin</h4>
+            <p class="text-white-50 small mb-0">Panel de Administración Premium</p>
         </div>
         
-        <nav class="nav flex-column">
-            <a class="nav-link-sidebar active" href="#">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
-            </a>
-            <a class="nav-link-sidebar" href="{{ path('admin_servicios') }}">
-                <i class="fas fa-calendar"></i> Servicios
-            </a>
-            <a class="nav-link-sidebar" href="{{ path('admin_turnos') }}">
-                <i class="fas fa-clock"></i> Turnos
-            </a>
-            <a class="nav-link-sidebar" href="#">
-                <i class="fas fa-chart-bar"></i> Reportes
-            </a>
-            <a class="nav-link-sidebar" href="#">
-                <i class="fas fa-cog"></i> Configuración
-            </a>
-            <a class="nav-link-sidebar" href="#" id="showTutorialBtn">
-                <i class="fas fa-graduation-cap"></i> Ver Tutorial
-            </a>
-            <a class="nav-link-sidebar" href="{{ path('app_logout') }}">
-                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-            </a>
-        </nav>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-users"></i> Usuarios
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-concierge-bell"></i> Servicios
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-credit-card"></i> Suscripciones
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-chart-bar"></i> Reportes
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-cog"></i> Configuración
+                </a>
+            </li>
+            <li class="nav-item mt-4">
+                <a class="nav-link" href="{{ path('app_logout') }}">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </li>
+        </ul>
     </div>
+
+    <!-- Navbar -->
+    <nav class="navbar-admin">
+        <div class="d-flex align-items-center">
+            <button class="btn btn-sm btn-outline-primary d-lg-none me-3" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h5 class="mb-0">Dashboard Administrador</h5>
+        </div>
+        
+        <div class="d-flex align-items-center gap-3">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" class="form-control" placeholder="Buscar usuarios...">
+            </div>
+            
+            <div class="dropdown filter-dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-filter me-2"></i>Filtrar
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="filterActive" checked>
+                            <label class="form-check-label" for="filterActive">
+                                Suscripciones activas
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="filterExpiring" checked>
+                            <label class="form-check-label" for="filterExpiring">
+                                Próximas a vencer
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="filterExpired">
+                            <label class="form-check-label" for="filterExpired">
+                                Vencidas
+                            </label>
+                        </div>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <button class="btn btn-sm btn-primary w-100">Aplicar filtros</button>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="dropdown">
+                <a href="#" class="dropdown-toggle text-dark text-decoration-none d-flex align-items-center" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=6c63ff&color=fff" class="user-avatar me-2">
+                    <span>Administrador</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Perfil</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Configuración</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="h3 mb-0 text-dark">Dashboard</h1>
-                <p class="text-muted mb-0">Bienvenido de vuelta, {{ app.user.nombre }}</p>
-            </div>
-            <a href="{{ path('admin_servicios') }}" class="btn btn-premium">
-                <i class="fas fa-plus me-2"></i>Nuevo Servicio
-            </a>
-        </div>
-
-        <!-- Stats Cards -->
+        <!-- Statistics Cards -->
         <div class="row g-4 mb-4">
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon gradient-1 text-white">
-                        <i class="fas fa-calendar"></i>
-                    </div>
-                    <h3 class="fw-bold text-gradient-1">{{ estadisticas.total_servicios|default(0) }}</h3>
-                    <p class="text-muted mb-0">Servicios Activos</p>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon gradient-2 text-white">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <h3 class="fw-bold text-gradient-2">{{ estadisticas.total_turnos|default(0) }}</h3>
-                    <p class="text-muted mb-0">Total Turnos</p>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon gradient-3 text-white">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h3 class="fw-bold text-gradient-3">{{ estadisticas.turnos_reservados|default(0) }}</h3>
-                    <p class="text-muted mb-0">Reservados</p>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon gradient-4 text-white">
+            <div class="col-md-3">
+                <div class="stat-card premium">
+                    <div class="stat-icon">
                         <i class="fas fa-users"></i>
                     </div>
-                    <h3 class="fw-bold text-gradient-4">{{ estadisticas.turnos_disponibles|default(0) }}</h3>
-                    <p class="text-muted mb-0">Disponibles</p>
+                    <div>
+                        <h6 class="text-muted">Usuarios Totales</h6>
+                        <h3 class="mb-0">{{ usuarios|length }}</h3>
+                        <div class="stats-change positive">
+                            <i class="fas fa-arrow-up me-1"></i> 5.2% este mes
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card warning">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted">Suscripciones Próximas a Vencer</h6>
+                        <h3 class="mb-0">{{ suscripciones_proximas_vencer|length }}</h3>
+                        <div class="stats-change negative">
+                            <i class="fas fa-arrow-up me-1"></i> 2.1% esta semana
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card danger">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted">Suscripciones Vencidas</h6>
+                        <h3 class="mb-0">{{ suscripciones_vencidas|length }}</h3>
+                        <div class="stats-change positive">
+                            <i class="fas fa-arrow-down me-1"></i> 3.7% esta semana
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card success">
+                    <div class="stat-icon">
+                        <i class="fas fa-concierge-bell"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted">Servicios Activos</h6>
+                        <h3 class="mb-0">{{ total_servicios }}</h3>
+                        <div class="stats-change positive">
+                            <i class="fas fa-arrow-up me-1"></i> 8.5% este mes
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Charts and Activities -->
-        <div class="row g-4">
-            <!-- Chart Section -->
-            <div class="col-xl-8">
-                <div class="chart-container">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="mb-0">Reservas por Día (Últimos 7 días)</h5>
-                    </div>
-                    <div style="height: 300px;">
-                        <canvas id="reservationsChart"></canvas>
-                    </div>
-                </div>
+        <!-- Users Table -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Gestión de Usuarios</h5>
+                <button class="btn btn-premium" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                    <i class="fas fa-plus me-2"></i>Nuevo Usuario
+                </button>
             </div>
-
-            <!-- Recent Activity -->
-            <div class="col-xl-4">
-                <div class="recent-activity">
-                    <h5 class="mb-4">Actividad Reciente</h5>
-                    
-                    {% if actividad_reciente|length > 0 %}
-                        {% for actividad in actividad_reciente %}
-                        <div class="activity-item">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h6 class="mb-1">
-                                        {% if actividad.tipo == 'reserva' %}
-                                            Nueva reserva
-                                        {% else %}
-                                            Turno disponible
-                                        {% endif %}
-                                    </h6>
-                                    <p class="text-muted mb-0">Servicio: {{ actividad.servicio }}</p>
-                                    {% if actividad.cliente %}
-                                    <p class="text-muted mb-0">Cliente: {{ actividad.cliente }}</p>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Plan</th>
+                                <th>Estado Suscripción</th>
+                                <th>Días Restantes</th>
+                                <th>Servicios</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario in usuarios %}
+                            {% set suscripcion_activa = usuario.getSuscripcionActiva() %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://ui-avatars.com/api/?name={{ usuario.nombre|url_encode }}&background=random" class="user-avatar me-3">
+                                        <div>
+                                            <h6 class="mb-0">{{ usuario.nombre }}</h6>
+                                            <small class="text-muted">{{ usuario.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if suscripcion_activa %}
+                                        {% set plan = suscripcion_activa.tipo %}
+                                        <span class="badge badge-plan badge-{{ plan }}">
+                                            {{ plan|capitalize }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-plan badge-basico">
+                                            Sin plan
+                                        </span>
                                     {% endif %}
-                                    <small class="text-muted">
-                                        {{ actividad.fecha|date('d/m/Y') }} a las {{ actividad.hora|date('H:i') }}
-                                    </small>
+                                </td>
+                                <td>
+                                    {% if suscripcion_activa %}
+                                        {% set estado = suscripcion_activa.getEstado() %}
+                                        {% if estado == 'activa' %}
+                                            <span class="badge bg-success bg-opacity-10 text-success">Activa</span>
+                                        {% elseif estado == 'proxima_vencer' %}
+                                            <span class="badge bg-warning bg-opacity-10 text-warning">Próxima a vencer</span>
+                                        {% else %}
+                                            <span class="badge bg-danger bg-opacity-10 text-danger">Vencida</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary">Inactiva</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if suscripcion_activa %}
+                                        {% set dias_restantes = suscripcion_activa.getDiasRestantes() %}
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1 me-2" style="max-width: 100px;">
+                                                <div class="progress-bar 
+                                                    {% if dias_restantes > 30 %}bg-success
+                                                    {% elseif dias_restantes > 7 %}bg-warning
+                                                    {% else %}bg-danger
+                                                    {% endif %}" 
+                                                    role="progressbar" 
+                                                    style="width: {{ 100 - (dias_restantes / 90 * 100) }}%" 
+                                                    aria-valuenow="{{ dias_restantes }}" 
+                                                    aria-valuemin="0" 
+                                                    aria-valuemax="90">
+                                                </div>
+                                            </div>
+                                            <span class="subscription-days 
+                                                {% if dias_restantes > 30 %}days-success
+                                                {% elseif dias_restantes > 7 %}days-warning
+                                                {% else %}days-danger
+                                                {% endif %}">
+                                                {{ dias_restantes }} días
+                                            </span>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">{{ usuario.servicios|length }}</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-action btn-edit" data-bs-toggle="modal" data-bs-target="#editUserModal" data-user-id="{{ usuario.id }}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-action btn-delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar Nuevo Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="userName" class="form-label">Nombre Completo</label>
+                                    <input type="text" class="form-control" id="userName" name="nombre" required>
                                 </div>
-                                <span class="badge bg-{{ actividad.tipo == 'reserva' ? 'success' : 'info' }}">
-                                    {{ actividad.tipo == 'reserva' ? 'Reserva' : 'Disponible' }}
-                                </span>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="userEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="userEmail" name="email" required>
+                                </div>
                             </div>
                         </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="text-center py-3">
-                            <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
-                            <p class="text-muted mb-0">No hay actividad reciente</p>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Services List -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="chart-container">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="mb-0">Mis Servicios</h5>
-                        <a href="{{ path('admin_servicios') }}" class="btn btn-sm btn-outline-primary">
-                            Ver todos
-                        </a>
-                    </div>
-                    
-                    {% if servicios|length > 0 %}
-                        <div class="row">
-                            {% for servicio in servicios|slice(0, 3) %}
-                            <div class="col-md-4 mb-3">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-body">
-                                        <h6 class="card-title">{{ servicio.nombre }}</h6>
-                                        <p class="card-text text-muted small">
-                                            {{ servicio.descripcion|length > 100 ? servicio.descripcion|slice(0, 100) ~ '...' : servicio.descripcion }}
-                                        </p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="badge bg-primary">
-                                                {{ servicio.turnos|length }} turnos
-                                            </span>
-                                            <a href="{{ path('servicio_publico', {'id': servicio.id}) }}" 
-                                            class="btn btn-sm btn-outline-primary" 
-                                            target="_blank">
-                                                Ver
-                                            </a>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Seleccionar Plan</label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="plan-card" data-plan="basico">
+                                        <h5>Básico</h5>
+                                        <div class="price">$10.000</div>
+                                        <small class="text-muted">/trimestral</small>
+                                        <div class="mt-3">
+                                            <span class="badge badge-plan badge-basico">ROLE_PLAN_BASICO</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="plan-card" data-plan="profesional">
+                                        <h5>Profesional</h5>
+                                        <div class="price">$15.000</div>
+                                        <small class="text-muted">/trimestral</small>
+                                        <div class="mt-3">
+                                            <span class="badge badge-plan badge-profesional">ROLE_PLAN_PROFESIONAL</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="plan-card" data-plan="empresa">
+                                        <h5>Empresa</h5>
+                                        <div class="price">$40.000</div>
+                                        <small class="text-muted">/trimestral</small>
+                                        <div class="mt-3">
+                                            <span class="badge badge-plan badge-empresa">ROLE_PLAN_EMPRESA</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            {% endfor %}
+                            <input type="hidden" id="selectedPlan" name="plan" required>
                         </div>
                         
-                        {% if servicios|length > 3 %}
-                        <div class="text-center mt-4">
-                            <a href="{{ path('mis_servicios') }}" class="btn btn-outline-primary">
-                                Ver todos mis servicios ({{ servicios|length }})
-                            </a>
+                        <div class="mb-3">
+                            <label class="form-label">Duración de Suscripción</label>
+                            <div>
+                                <span class="duration-badge selected" data-duration="3">3 meses</span>
+                                <span class="duration-badge" data-duration="6">6 meses</span>
+                                <span class="duration-badge" data-duration="12">1 año</span>
+                                <span class="duration-badge" data-duration="24">2 años</span>
+                            </div>
+                            <input type="hidden" id="selectedDuration" name="duracion" value="3" required>
                         </div>
-                        {% endif %}
-                    {% else %}
-                        <div class="text-center py-5">
-                            <i class="fas fa-calendar-plus fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No tienes servicios aún</h5>
-                            <p class="text-muted">Crea tu primer servicio para comenzar a recibir turnos</p>
-                            <a href="{{ path('admin_servicios') }}" class="btn btn-premium">
-                                Crear Primer Servicio
-                            </a>
-                        </div>
-                    {% endif %}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-premium" id="createUserBtn">Crear Usuario</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Edit User Modal -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        <input type="hidden" id="editUserId" name="id">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editUserName" class="form-label">Nombre Completo</label>
+                                    <input type="text" class="form-control" id="editUserName" name="nombre" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editUserEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="editUserEmail" name="email" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Plan Actual</label>
+                            <div id="currentPlanInfo" class="p-3 bg-light rounded-3 mb-3">
+                                <!-- Aquí se cargará la información del plan actual -->
+                            </div>
+                            
+                            <label class="form-label">Cambiar Plan</label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="plan-card" data-plan="basico">
+                                        <h5>Básico</h5>
+                                        <div class="price">$10.000</div>
+                                        <small class="text-muted">/trimestral</small>
+                                        <div class="mt-3">
+                                            <span class="badge badge-plan badge-basico">ROLE_PLAN_BASICO</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="plan-card" data-plan="profesional">
+                                        <h5>Profesional</h5>
+                                        <div class="price">$15.000</div>
+                                        <small class="text-muted">/trimestral</small>
+                                        <div class="mt-3">
+                                            <span class="badge badge-plan badge-profesional">ROLE_PLAN_PROFESIONAL</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="plan-card" data-plan="empresa">
+                                        <h5>Empresa</h5>
+                                        <div class="price">$40.000</div>
+                                        <small class="text-muted">/trimestral</small>
+                                        <div class="mt-3">
+                                            <span class="badge badge-plan badge-empresa">ROLE_PLAN_EMPRESA</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="editSelectedPlan" name="plan">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Extender Suscripción</label>
+                            <div>
+                                <span class="duration-badge" data-duration="3">+3 meses</span>
+                                <span class="duration-badge" data-duration="6">+6 meses</span>
+                                <span class="duration-badge" data-duration="12">+1 año</span>
+                                <span class="duration-badge" data-duration="24">+2 años</span>
+                            </div>
+                            <input type="hidden" id="editSelectedDuration" name="duracion_extension">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-premium" id="saveUserBtn">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Notification -->
+    <div class="floating-notification" id="successNotification">
+        <div class="notification-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div>
+            <h6 class="mb-0">Operación exitosa</h6>
+            <p class="mb-0 small" id="notificationMessage">Los cambios se han guardado correctamente</p>
+        </div>
+    </div>
 {% endblock %}
 
-{% block footer %}{% endblock %}
-
 {% block javascript %}
-{{ parent() }}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    // Variables globales
-    let currentTutorialStep = 1;
-    
-    // Datos reales para el gráfico
-    const chartData = {
-        labels: {{ datos_grafica.labels|json_encode|raw }},
-        data: {{ datos_grafica.data|json_encode|raw }}
-    };
-
-    // Inicializar Chart.js
-    document.addEventListener('DOMContentLoaded', function() {
-        const ctx = document.getElementById('reservationsChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: chartData.labels,
-                datasets: [{
-                    label: 'Reservas',
-                    data: chartData.data,
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            drawBorder: false
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
+    {{ parent() }}
+    <script>
+        // Toggle sidebar on mobile
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        });
+        
+        // Close sidebar when clicking overlay
+        document.querySelector('.sidebar-overlay').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.remove('active');
+            this.classList.remove('active');
+        });
+        
+        // Plan selection in modals
+        document.querySelectorAll('.plan-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards in the same modal
+                this.closest('.modal-body').querySelectorAll('.plan-card').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                
+                // Update hidden input value
+                const plan = this.getAttribute('data-plan');
+                const hiddenInput = this.closest('.modal-body').querySelector('input[type="hidden"][name="plan"]');
+                if (hiddenInput) {
+                    hiddenInput.value = plan;
                 }
+            });
+        });
+        
+        // Duration selection
+        document.querySelectorAll('.duration-badge').forEach(badge => {
+            badge.addEventListener('click', function() {
+                // Remove selected class from all badges in the same container
+                this.parentElement.querySelectorAll('.duration-badge').forEach(b => {
+                    b.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked badge
+                this.classList.add('selected');
+                
+                // Update hidden input value
+                const duration = this.getAttribute('data-duration');
+                const hiddenInput = this.closest('.modal-body').querySelector('input[type="hidden"][name$="uration"]');
+                if (hiddenInput) {
+                    hiddenInput.value = duration;
+                }
+            });
+        });
+        
+        // Create user button
+        document.getElementById('createUserBtn')?.addEventListener('click', function() {
+            const form = document.getElementById('addUserForm');
+            if (form.checkValidity()) {
+                // Simulate API call
+                setTimeout(() => {
+                    $('#addUserModal').modal('hide');
+                    showNotification('Usuario creado exitosamente');
+                }, 1000);
+            } else {
+                form.reportValidity();
             }
         });
-
-        // Event listener para el botón de tutorial
-        const tutorialBtn = document.getElementById('showTutorialBtn');
-        if (tutorialBtn) {
-            tutorialBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                tutorialStart();
+        
+        // Save user button
+        document.getElementById('saveUserBtn')?.addEventListener('click', function() {
+            const form = document.getElementById('editUserForm');
+            if (form.checkValidity()) {
+                // Simulate API call
+                setTimeout(() => {
+                    $('#editUserModal').modal('hide');
+                    showNotification('Cambios guardados exitosamente');
+                }, 1000);
+            } else {
+                form.reportValidity();
+            }
+        });
+        
+        // Show notification function
+        function showNotification(message) {
+            const notification = document.getElementById('successNotification');
+            document.getElementById('notificationMessage').textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Edit user button click handler
+        document.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const userId = this.getAttribute('data-user-id');
+                // In a real application, you would fetch user data from the server
+                console.log('Editing user with ID:', userId);
+                
+                // Simulate loading user data
+                document.getElementById('editUserId').value = userId;
+                document.getElementById('editUserName').value = 'Usuario ' + userId;
+                document.getElementById('editUserEmail').value = 'usuario' + userId + '@example.com';
+                
+                // Simulate current plan info
+                document.getElementById('currentPlanInfo').innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Plan Profesional</h6>
+                            <small class="text-muted">ROLE_PLAN_PROFESIONAL</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="text-warning fw-bold">25 días restantes</div>
+                            <small class="text-muted">Vence el 15/03/2024</small>
+                        </div>
+                    </div>
+                `;
             });
-        }
-    });
-
-    // Funciones del tutorial
-    function tutorialStart() {
-        const overlay = document.getElementById('tutorialOverlay');
-        if (overlay) {
-            overlay.style.display = 'flex';
-            currentTutorialStep = 1;
-            tutorialShowStep(1);
-        }
-    }
-
-    function tutorialShowStep(step) {
-        // Ocultar todos los pasos
-        document.querySelectorAll('.tutorial-step').forEach(el => {
-            el.classList.remove('active');
         });
         
-        // Mostrar paso actual
-        const stepElement = document.getElementById('step' + step);
-        if (stepElement) {
-            stepElement.classList.add('active');
-        }
-        
-        // Actualizar puntos de progreso
-        document.querySelectorAll('.progress-dot').forEach((dot, index) => {
-            dot.classList.toggle('active', index === step - 1);
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
         });
-        
-        currentTutorialStep = step;
-    }
-
-    function tutorialNext() {
-        if (currentTutorialStep < 6) {
-            tutorialShowStep(currentTutorialStep + 1);
-        } else {
-            tutorialFinish();
-        }
-    }
-
-    function tutorialPrev() {
-        if (currentTutorialStep > 1) {
-            tutorialShowStep(currentTutorialStep - 1);
-        }
-    }
-
-    function tutorialSkip() {
-        const overlay = document.getElementById('tutorialOverlay');
-        if (overlay) {
-            overlay.style.display = 'none';
-        }
-    }
-
-    function tutorialFinish() {
-        const overlay = document.getElementById('tutorialOverlay');
-        if (overlay) {
-            overlay.style.display = 'none';
-        }
-        // Aquí puedes agregar una llamada AJAX para marcar el tutorial como completado
-        fetch('/admin/tutorial-completed', { method: 'POST' });
-    }
-
-    // Hacer funciones globales para los onclick
-    window.tutorialStart = tutorialStart;
-    window.tutorialNext = tutorialNext;
-    window.tutorialPrev = tutorialPrev;
-    window.tutorialSkip = tutorialSkip;
-    window.tutorialFinish = tutorialFinish;
-</script>
+    </script>
 {% endblock %}

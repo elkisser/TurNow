@@ -5,6 +5,85 @@
 {% block css %}
     {{ parent() }}
     <style>
+        :root {
+            --primary: #6c63ff;
+            --secondary: #ff6584;
+            --accent: #42b883;
+            --dark: #2c2c6c;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Navigation */
+        .navbar-premium {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            transition: all 0.3s ease;
+            align-items: center; /* aseguran centrado vertical del contenido */
+        }
+        
+        .navbar-premium.scrolled {
+            padding: 10px 0;
+        }
+        
+        /* Logo responsivo para la navbar */
+        .brand-logo {
+            height: 56px;
+            width: auto;
+            object-fit: contain;
+            transition: height 0.18s ease;
+            display: inline-block;
+        }
+
+        /* Ajustes por breakpoint */
+        @media (max-width: 992px) {
+            .brand-logo { height: 48px; }
+        }
+
+        @media (max-width: 576px) {
+            .brand-logo { height: 40px; }
+            .navbar-premium { padding: 10px 0; }
+        }
+        
+        .btn-premium {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+        }
+        
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 99, 255, 0.4);
+            color: white;
+        }
+        
+        .btn-outline-premium {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 50px;
+            padding: 8px 23px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-premium:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 99, 255, 0.3);
+        }
+        
         /* Hero Section */
         .hero-section {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -13,6 +92,7 @@
             align-items: center;
             position: relative;
             overflow: hidden;
+            padding-top: 80px;
         }
         
         .hero-section::before {
@@ -26,9 +106,18 @@
             opacity: 0.3;
         }
         
+        .card-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
         /* Features Section */
         .features-section {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 100px 0;
         }
         
         .feature-card {
@@ -40,6 +129,23 @@
             transition: all 0.3s ease;
             height: 100%;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 0;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            transition: height 0.5s ease;
+        }
+        
+        .feature-card:hover::before {
+            height: 100%;
         }
         
         .feature-card:hover {
@@ -50,17 +156,23 @@
         .feature-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
             border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: rotate(10deg) scale(1.1);
         }
         
         /* Demo Section */
         .demo-section {
             background: #1a1a1a;
+            padding: 100px 0;
         }
         
         .demo-card {
@@ -69,9 +181,19 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         }
         
         /* Pricing Section */
+        .pricing-section {
+            padding: 100px 0;
+        }
+        
         .pricing-card {
             background: white;
             border-radius: 20px;
@@ -79,6 +201,19 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             height: 100%;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #f1f1f1;
+        }
+        
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
         }
         
         .pricing-card:hover {
@@ -87,13 +222,30 @@
         }
         
         .pricing-card.featured {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             transform: scale(1.05);
+            border: none;
+        }
+        
+        .pricing-card.featured::before {
+            display: none;
         }
         
         .pricing-card.featured:hover {
             transform: scale(1.08) translateY(-5px);
+        }
+        
+        .price-badge {
+            position: absolute;
+            top: 10px;
+            right: -30px;
+            background: var(--accent);
+            color: white;
+            padding: 5px 30px;
+            transform: rotate(45deg);
+            font-size: 14px;
+            font-weight: 600;
         }
         
         /* Animations */
@@ -106,29 +258,107 @@
             animation: float 6s ease-in-out infinite;
         }
         
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        /* Buttons enhancements */
+        .btn-light {
+            border-radius: 50px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-light:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-outline-light {
+            border-radius: 50px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-light:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer a:hover {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .social-icons a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .hero-section {
                 text-align: center;
-                padding: 4rem 0;
+                padding: 6rem 0 4rem;
             }
             
             .display-3 {
                 font-size: 2.5rem;
+            }
+            
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+            
+            .pricing-card.featured:hover {
+                transform: translateY(-5px);
             }
         }
     </style>
 {% endblock %}
 
 {% block content %}
-    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-premium fixed-top">
         <div class="container">
             <a class="navbar-brand fw-bold text-dark" href="#">
-                <i class="fas fa-calendar-check me-2"></i>TurNow
+                <img src="/img/logo-TurNow.png" alt="TurNow" class="brand-logo">
             </a>
             <div class="ms-auto">
-                <a href="{{ path('app_login') }}" class="btn btn-outline-dark me-2">Ingresar</a>
+                <a href="{{ path('app_login') }}" class="btn btn-outline-premium me-2">Ingresar</a>
                 <a href="{{ path('app_register') }}" class="btn btn-premium">Registrarse</a>
             </div>
         </div>
@@ -165,7 +395,7 @@
                                     <div class="h2 mb-0 text-dark">10:30 AM</div>
                                     <div class="text-muted">Disponible</div>
                                 </div>
-                                <button class="btn btn-premium w-100">
+                                <button class="btn btn-premium w-100 py-3">
                                     <i class="fas fa-calendar-plus me-2"></i>Reservar Ahora
                                 </button>
                             </div>
@@ -177,8 +407,8 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="py-5 features-section">
-        <div class="container py-5">
+    <section id="features" class="features-section">
+        <div class="container">
             <div class="text-center mb-5">
                 <h2 class="display-4 fw-bold text-dark mb-3">Funcionalidades Premium</h2>
                 <p class="lead text-muted">Todo lo que necesitas para una gestión impecable de turnos</p>
@@ -249,8 +479,8 @@
     </section>
 
     <!-- Demo Section -->
-    <section id="demo" class="py-5 demo-section">
-        <div class="container py-5">
+    <section id="demo" class="demo-section">
+        <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <h2 class="display-4 fw-bold text-white mb-4">Experimenta la diferencia TurNow</h2>
@@ -260,10 +490,18 @@
                         <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Soporte 24/7 incluido</li>
                         <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Actualizaciones gratuitas</li>
                     </ul>
+                    <a href="#" class="btn btn-premium btn-lg mt-4 px-5 py-3">
+                        <i class="fas fa-play-circle me-2"></i>Ver Demo Interactivo
+                    </a>
                 </div>
                 <div class="col-lg-6">
-                    <div class="demo-card">
-                        <img src="img/dashboard.png" class="img-fluid rounded-3" alt="Dashboard TurNow">
+                    <div class="demo-card pulse">
+                        <div class="placeholder-dashboard bg-dark rounded-3" style="height: 300px; display: flex; align-items: center; justify-content: center;">
+                            <div class="text-center text-white-50">
+                                <i class="fas fa-desktop fa-4x mb-3"></i>
+                                <p>Dashboard Interactivo TurNow</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -271,8 +509,8 @@
     </section>
 
     <!-- Pricing Section -->
-    <section class="py-5 bg-light">
-        <div class="container py-5">
+    <section class="pricing-section bg-light">
+        <div class="container">
             <div class="text-center mb-5">
                 <h2 class="display-4 fw-bold text-dark mb-3">Planes a Medida</h2>
                 <p class="lead text-muted">Elige el plan perfecto para tu negocio</p>
@@ -282,7 +520,7 @@
                 <div class="col-md-4">
                     <div class="pricing-card">
                         <h3 class="h4">Básico</h3>
-                        <div class="display-4 fw-bold text-dark">$29</div>
+                        <div class="display-4 fw-bold text-dark">$10.000</div>
                         <div class="text-muted">/mes</div>
                         <ul class="list-unstyled my-4">
                             <li class="mb-2"><i class="fas fa-check text-success me-2"></i>1 Administrador</li>
@@ -290,15 +528,15 @@
                             <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Soporte por email</li>
                             <li class="mb-2"><i class="fas fa-times text-danger me-2"></i>Dashboard avanzado</li>
                         </ul>
-                        <a href="{{ path('app_register') }}" class="btn btn-outline-primary w-100">Comenzar</a>
+                        <a href="{{ path('app_register') }}" class="btn btn-outline-primary w-100 py-3">Comenzar</a>
                     </div>
                 </div>
                 
                 <div class="col-md-4">
                     <div class="pricing-card featured">
-                        <span class="badge bg-white text-primary mb-3">Popular</span>
+                        <div class="price-badge">Popular</div>
                         <h3 class="h4">Profesional</h3>
-                        <div class="display-4 fw-bold">$79</div>
+                        <div class="display-4 fw-bold">$15.000</div>
                         <div class="text-white-50">/mes</div>
                         <ul class="list-unstyled my-4">
                             <li class="mb-2"><i class="fas fa-check me-2"></i>3 Administradores</li>
@@ -306,14 +544,14 @@
                             <li class="mb-2"><i class="fas fa-check me-2"></i>Soporte prioritario</li>
                             <li class="mb-2"><i class="fas fa-check me-2"></i>Dashboard completo</li>
                         </ul>
-                        <a href="{{ path('app_register') }}" class="btn btn-light w-100">Comenzar</a>
+                        <a href="{{ path('app_register') }}" class="btn btn-light w-100 py-3">Comenzar</a>
                     </div>
                 </div>
                 
                 <div class="col-md-4">
                     <div class="pricing-card">
-                        <h3 class="h4">Enterprise</h3>
-                        <div class="display-4 fw-bold text-dark">$199</div>
+                        <h3 class="h4">Empresa</h3>
+                        <div class="display-4 fw-bold text-dark">$40.000</div>
                         <div class="text-muted">/mes</div>
                         <ul class="list-unstyled my-4">
                             <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Administradores ilimitados</li>
@@ -321,9 +559,13 @@
                             <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Soporte 24/7</li>
                             <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Personalización total</li>
                         </ul>
-                        <a href="{{ path('app_register') }}" class="btn btn-outline-primary w-100">Comenzar</a>
+                        <a href="{{ path('app_register') }}" class="btn btn-outline-primary w-100 py-3">Comenzar</a>
                     </div>
                 </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <p class="text-muted">¿Necesitas un plan personalizado? <a href="#" class="text-primary">Contáctanos</a></p>
             </div>
         </div>
     </section>
@@ -331,6 +573,7 @@
 
 {% block javascript %}
     {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Smooth scrolling para los enlaces
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -346,25 +589,14 @@
             });
         });
 
-        // Animación de contador para estadísticas
-        const counters = document.querySelectorAll('.counter');
-        const speed = 200;
-
-        counters.forEach(counter => {
-            const updateCount = () => {
-                const target = +counter.getAttribute('data-target');
-                const count = +counter.innerText;
-                const increment = target / speed;
-
-                if (count < target) {
-                    counter.innerText = Math.ceil(count + increment);
-                    setTimeout(updateCount, 1);
-                } else {
-                    counter.innerText = target;
-                }
-            };
-
-            updateCount();
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar-premium');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
         });
     </script>
 {% endblock %}

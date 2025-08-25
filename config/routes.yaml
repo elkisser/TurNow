@@ -9,19 +9,19 @@ home:
     controller: App\Controller\HomeController::index
     methods: [GET]
 
-admin_dashboard:
-    path: /admin
-    controller: App\Controller\AdminController::dashboard
+servicio_dashboard:
+    path: /servicio
+    controller: App\Controller\ServicioController::dashboard
     methods: [GET]
 
-admin_servicios:
-    path: /admin/servicios
-    controller: App\Controller\AdminController::servicios
+servicios:
+    path: /servicio/servicios
+    controller: App\Controller\ServicioController::servicios
     methods: [GET, POST]
 
-admin_turnos:
-    path: /admin/turnos
-    controller: App\Controller\AdminController::turnos
+servicio_turnos:
+    path: /servicio/turnos
+    controller: App\Controller\ServicioController::turnos
     methods: [GET]
 
 reservar_turno:

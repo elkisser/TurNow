@@ -44,10 +44,14 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
+    #[ORM\OneToMany(targetEntity: Suscripcion::class, mappedBy: 'usuario')]
+    private Collection $suscripciones;
+
     public function __construct()
     {
         $this->fechaCreacion = new \DateTimeImmutable();
         $this->servicios = new ArrayCollection();
+        $this->suscripciones = new ArrayCollection();
         $this->roles = ['ROLE_USER'];
     }
 
@@ -185,5 +189,46 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
         $this->isVerified = $isVerified;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Suscripcion>
+     */
+    public function getSuscripciones(): Collection
+    {
+        return $this->suscripciones;
+    }
+
+    public function addSuscripcion(Suscripcion $suscripcion): static
+    {
+        if (!$this->suscripciones->contains($suscripcion)) {
+            $this->suscripciones->add($suscripcion);
+            $suscripcion->setUsuario($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSuscripcion(Suscripcion $suscripcion): static
+    {
+        if ($this->suscripciones->removeElement($suscripcion)) {
+            // set the owning side to null (unless already changed)
+            if ($suscripcion->getUsuario() === $this) {
+                $suscripcion->setUsuario(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getSuscripcionActiva(): ?Suscripcion
+    {
+        foreach ($this->suscripciones as $suscripcion) {
+            if ($suscripcion->isActiva() && $suscripcion->getEstado() !== 'vencida') {
+                return $suscripcion;
+            }
+        }
+        
+        return null;
     }
 }

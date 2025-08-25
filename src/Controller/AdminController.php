@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Usuario;
 use App\Entity\Servicio;
+use App\Entity\Suscripcion;
 use App\Form\ServicioType;
 use App\Services\TurnoService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,102 +19,139 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class AdminController extends AbstractController
 {
     #[Route('/', name: 'admin_dashboard')]
-    public function dashboard(TurnoService $turnoService): Response
+    public function dashboard(EntityManagerInterface $entityManager): Response
     {
-        $user = $this->getUser();
+        // Obtener todos los usuarios
+        $usuarios = $entityManager->getRepository(Usuario::class)->findAll();
         
-        // Obtener estadísticas reales
-        $estadisticas = $turnoService->getEstadisticasUsuario($user);
+        // Obtener suscripciones próximas a vencer (menos de 7 días)
+        $suscripcionesProximasVencer = [];
+        $suscripcionesVencidas = [];
+        $totalServicios = 0;
         
-        // Obtener datos para el gráfico
-        $datosGrafica = $turnoService->getDatosGrafica($user);
-        
-        // Obtener actividad reciente
-        $actividadReciente = $turnoService->getActividadReciente($user);
-        
-        // Obtener servicios del usuario
-        $servicios = $user->getServicios();
-
-        return $this->render('admin/dashboard.html.twig', [
-            'servicios' => $servicios,
-            'estadisticas' => $estadisticas,
-            'datos_grafica' => $datosGrafica,
-            'actividad_reciente' => $actividadReciente
-        ]);
-    }
-
-    #[Route('/tutorial-completed', name: 'admin_tutorial_completed', methods: ['POST'])]
-    public function markTutorialCompleted(Request $request): Response
-    {
-        $request->getSession()->set('show_tutorial', false);
-        return new Response('Tutorial completed');
-    }
-
-    #[Route('/servicios', name: 'admin_servicios')]
-    public function servicios(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $servicio = new Servicio();
-        $form = $this->createForm(ServicioType::class, $servicio);
-        
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                $usuario = $this->getUser();
-                $servicio->setAdministrador($usuario);
-
-                // Procesar banner
-                $bannerFile = $form->get('banner_file')->getData();
-                if ($bannerFile) {
-                    $newFilename = uniqid().'.'.$bannerFile->guessExtension();
-                    $bannerFile->move(
-                        $this->getParameter('banners_directory'),
-                        $newFilename
-                    );
-                    $servicio->setBannerUrl('/uploads/banners/'.$newFilename);
+        foreach ($usuarios as $usuario) {
+            $suscripcionActiva = $usuario->getSuscripcionActiva();
+            
+            if ($suscripcionActiva) {
+                $estado = $suscripcionActiva->getEstado();
+                
+                if ($estado === 'proxima_vencer') {
+                    $suscripcionesProximasVencer[] = $suscripcionActiva;
+                } elseif ($estado === 'vencida') {
+                    $suscripcionesVencidas[] = $suscripcionActiva;
                 }
-
-                // Obtener horarios del campo hidden
-                $horariosJson = $form->get('horarios_data')->getData();
-                $horarios = [];
-                if ($horariosJson) {
-                    $horarios = json_decode($horariosJson, true);
-                }
-                if (!is_array($horarios) || empty($horarios)) {
-                    $this->addFlash('error', 'Debes agregar al menos un horario disponible.');
-                    // No guardar ni redirigir
-                    return $this->render('admin/servicios.html.twig', [
-                        'form' => $form->createView(),
-                        'servicios' => $this->getUser()->getServicios()
-                    ]);
-                }
-                $servicio->setHorariosDisponibles($horarios);
-
-                $entityManager->persist($servicio);
-                $entityManager->flush();
-
-                $this->addFlash('success', '¡Servicio creado exitosamente!');
-                return $this->redirectToRoute('servicio_publico', ['id' => $servicio->getId()]);
-
-            } catch (\Exception $e) {
-                $this->addFlash('error', 'Error al crear el servicio: ' . $e->getMessage());
             }
+            
+            $totalServicios += count($usuario->getServicios());
         }
-
-        $servicios = $this->getUser()->getServicios();
-        return $this->render('admin/servicios.html.twig', [
-            'form' => $form->createView(),
-            'servicios' => $servicios
+        
+        return $this->render('admin/dashboard.html.twig', [
+            'usuarios' => $usuarios,
+            'suscripciones_proximas_vencer' => $suscripcionesProximasVencer,
+            'suscripciones_vencidas' => $suscripcionesVencidas,
+            'total_servicios' => $totalServicios
         ]);
     }
-
-    #[Route('/turnos', name: 'admin_turnos')]
-    public function turnos(): Response
+    
+    #[Route('/usuario/{id}/editar', name: 'admin_usuario_editar')]
+    public function editarUsuario(Usuario $usuario, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $user = $this->getUser();
-        $servicios = $user->getServicios();
-
-        return $this->render('admin/turnos.html.twig', [
-            'servicios' => $servicios,
+        // Lógica para editar usuario y suscripción
+        if ($request->isMethod('POST')) {
+            $plan = $request->request->get('plan');
+            $duracionExtension = $request->request->get('duracion_extension');
+            
+            // Actualizar roles según el plan seleccionado
+            $roles = ['ROLE_USER'];
+            switch ($plan) {
+                case 'basico':
+                    $roles[] = 'ROLE_PLAN_BASICO';
+                    break;
+                case 'profesional':
+                    $roles[] = 'ROLE_PLAN_PROFESIONAL';
+                    break;
+                case 'empresa':
+                    $roles[] = 'ROLE_PLAN_EMPRESA';
+                    break;
+            }
+            
+            $usuario->setRoles($roles);
+            
+            // Crear o actualizar suscripción
+            $suscripcion = $usuario->getSuscripcionActiva();
+            if (!$suscripcion) {
+                $suscripcion = new Suscripcion();
+                $suscripcion->setUsuario($usuario);
+                $suscripcion->setFechaInicio(new \DateTimeImmutable());
+                $entityManager->persist($suscripcion);
+            }
+            
+            $suscripcion->setTipo($plan);
+            
+            // Extender suscripción si se especificó una duración
+            if ($duracionExtension) {
+                $fechaFin = $suscripcion->getFechaFin() ?: new \DateTimeImmutable();
+                $fechaFin = $fechaFin->modify("+$duracionExtension months");
+                $suscripcion->setFechaFin($fechaFin);
+            }
+            
+            $entityManager->flush();
+            
+            $this->addFlash('success', 'Usuario actualizado correctamente');
+            return $this->redirectToRoute('admin_dashboard');
+        }
+        
+        return $this->render('admin/editar_usuario.html.twig', [
+            'usuario' => $usuario
         ]);
+    }
+    
+    #[Route('/usuario/nuevo', name: 'admin_usuario_nuevo')]
+    public function nuevoUsuario(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        if ($request->isMethod('POST')) {
+            // Crear nuevo usuario
+            $usuario = new Usuario();
+            $usuario->setNombre($request->request->get('nombre'));
+            $usuario->setEmail($request->request->get('email'));
+            $usuario->setPassword(password_hash(bin2hex(random_bytes(10)), PASSWORD_DEFAULT)); // Contraseña temporal
+            
+            // Asignar roles según el plan
+            $plan = $request->request->get('plan');
+            $roles = ['ROLE_USER'];
+
+            // Usamos match y filtramos nulls automáticamente
+            $rolePlan = match($plan) {
+                'basico' => 'ROLE_PLAN_BASICO',
+                'profesional' => 'ROLE_PLAN_PROFESIONAL',
+                'empresa' => 'ROLE_PLAN_EMPRESA',
+                default => null,
+            };
+
+            if ($rolePlan !== null) {
+                $roles[] = $rolePlan;
+            }
+            
+            $usuario->setRoles($roles);
+            
+            // Crear suscripción
+            $suscripcion = new Suscripcion();
+            $suscripcion->setUsuario($usuario);
+            $suscripcion->setTipo($plan);
+            $suscripcion->setFechaInicio(new \DateTimeImmutable());
+            
+            $duracion = (int) $request->request->get('duracion');
+            $fechaFin = (new \DateTimeImmutable())->modify("+$duracion months");
+            $suscripcion->setFechaFin($fechaFin);
+            
+            $entityManager->persist($usuario);
+            $entityManager->persist($suscripcion);
+            $entityManager->flush();
+            
+            $this->addFlash('success', 'Usuario creado correctamente');
+            return $this->redirectToRoute('admin_dashboard');
+        }
+        
+        return $this->render('admin/nuevo_usuario.html.twig');
     }
 }
