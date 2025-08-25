@@ -4,18 +4,43 @@
 
 {% block css %}
 {{ parent() }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --secondary-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        --dark-color: #2c3e50;
+        --light-color: #f8f9fa;
+        --border-radius: 16px;
+        --box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f5f7fb;
+        color: #2c3e50;
+        margin: 0;
+        padding: 0;
+    }
+
     .service-page {
         min-height: 100vh;
         background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        font-family: 'Inter', sans-serif;
     }
     
     /* Header con Banner */
     .page-header {
-        height: 60vh;
-        min-height: 500px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 70vh;
+        min-height: 600px;
         color: white;
         display: flex;
         align-items: center;
@@ -33,31 +58,37 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.85) 100%);
     }
     
     .header-content {
         position: relative;
         z-index: 2;
         text-align: center;
-        max-width: 800px;
+        max-width: 900px;
         padding: 0 2rem;
     }
     
     .page-title {
-        font-size: 4rem;
+        font-size: 4.5rem;
         font-weight: 800;
         margin-bottom: 1.5rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
         line-height: 1.1;
+        background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
     
     .page-description {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
         opacity: 0.95;
         line-height: 1.6;
         margin-bottom: 2.5rem;
         font-weight: 300;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
     }
     
     /* Contenido Principal */
@@ -69,19 +100,19 @@
     
     /* Sección de Horarios Premium */
     .schedule-section {
-        background: white;
+        background: rgba(255, 255, 255, 0.95);
         padding: 4rem;
         border-radius: 25px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        box-shadow: var(--box-shadow);
         margin-bottom: 4rem;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
     }
     
     .section-heading {
-        font-size: 2.8rem;
+        font-size: 3rem;
         font-weight: 700;
-        color: #2c3e50;
+        color: var(--dark-color);
         margin-bottom: 3rem;
         text-align: center;
         position: relative;
@@ -90,11 +121,11 @@
     .section-heading::after {
         content: '';
         display: block;
-        width: 80px;
-        height: 4px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        margin: 1rem auto;
-        border-radius: 2px;
+        width: 100px;
+        height: 5px;
+        background: var(--primary-gradient);
+        margin: 1.5rem auto;
+        border-radius: 3px;
     }
     
     .schedule-grid {
@@ -105,11 +136,11 @@
     
     .schedule-day {
         background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-        padding: 2rem;
+        padding: 2.5rem;
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         border-left: 5px solid #667eea;
-        transition: all 0.3s ease;
+        transition: var(--transition);
     }
     
     .schedule-day:hover {
@@ -122,14 +153,14 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
+        padding-bottom: 1.5rem;
         border-bottom: 2px solid #e9ecef;
     }
     
     .day-name {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
         font-weight: 600;
-        color: #2c3e50;
+        color: var(--dark-color);
         display: flex;
         align-items: center;
         gap: 0.75rem;
@@ -137,7 +168,7 @@
     
     .day-name i {
         color: #667eea;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
     
     .day-status {
@@ -150,21 +181,21 @@
     }
     
     .status-open {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        background: var(--secondary-gradient);
         color: white;
         box-shadow: 0 4px 15px rgba(67, 233, 123, 0.3);
     }
     
     .status-closed {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        background: var(--danger-gradient);
         color: white;
         box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
     }
     
     .time-slots-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1.2rem;
     }
     
     .time-slot {
@@ -176,7 +207,7 @@
         font-weight: 600;
         color: #495057;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         position: relative;
         overflow: hidden;
     }
@@ -188,7 +219,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--primary-gradient);
         opacity: 0;
         transition: opacity 0.3s ease;
         z-index: 1;
@@ -211,7 +242,7 @@
     }
     
     .time-slot.selected {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--primary-gradient);
         color: white;
         border-color: #667eea;
         box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
@@ -230,18 +261,21 @@
     }
     
     .reserve-btn {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        background: var(--danger-gradient);
         color: white;
         border: none;
-        padding: 1.5rem 3rem;
+        padding: 1.5rem 4rem;
         border-radius: 50px;
-        font-size: 1.3rem;
+        font-size: 1.4rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 1px;
         box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
-        transition: all 0.3s ease;
+        transition: var(--transition);
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
     }
     
     .reserve-btn:hover {
@@ -263,19 +297,20 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0,0,0,0.8);
+        background: rgba(0,0,0,0.85);
         display: none;
         align-items: center;
         justify-content: center;
         z-index: 10000;
         padding: 2rem;
+        backdrop-filter: blur(5px);
     }
     
     .modal-content {
         background: white;
         border-radius: 25px;
-        padding: 3rem;
-        max-width: 500px;
+        padding: 3.5rem;
+        max-width: 550px;
         width: 100%;
         box-shadow: 0 25px 60px rgba(0,0,0,0.3);
         position: relative;
@@ -299,20 +334,27 @@
         right: 1.5rem;
         background: none;
         border: none;
-        font-size: 1.5rem;
+        font-size: 1.8rem;
         color: #6c757d;
         cursor: pointer;
-        transition: color 0.3s ease;
+        transition: var(--transition);
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .modal-close:hover {
         color: #ff6b6b;
+        background: #f8f9fa;
     }
     
     .modal-title {
-        font-size: 2.2rem;
+        font-size: 2.5rem;
         font-weight: 700;
-        color: #2c3e50;
+        color: var(--dark-color);
         margin-bottom: 0.5rem;
         text-align: center;
     }
@@ -325,14 +367,19 @@
     }
     
     .selected-time {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--primary-gradient);
         color: white;
-        padding: 1rem 1.5rem;
+        padding: 1.2rem 1.5rem;
         border-radius: 15px;
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
         font-weight: 600;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
     }
     
     .reserva-form {
@@ -340,23 +387,25 @@
     }
     
     .form-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.8rem;
     }
     
     .form-label {
         font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
+        color: var(--dark-color);
+        margin-bottom: 0.75rem;
         display: block;
+        font-size: 1.05rem;
     }
     
     .form-control {
         width: 100%;
-        padding: 1rem 1.5rem;
+        padding: 1.2rem 1.5rem;
         border: 2px solid #e9ecef;
         border-radius: 12px;
         font-size: 1rem;
-        transition: all 0.3s ease;
+        transition: var(--transition);
+        font-family: 'Inter', sans-serif;
     }
     
     .form-control:focus {
@@ -365,18 +414,45 @@
         outline: none;
     }
     
+    .calendar-container {
+        margin-bottom: 1.8rem;
+    }
+    
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .calendar-title {
+        font-weight: 600;
+        color: var(--dark-color);
+        font-size: 1.1rem;
+    }
+    
+    .flatpickr-calendar {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
     .submit-btn {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        background: var(--secondary-gradient);
         color: white;
         border: none;
-        padding: 1.25rem 2rem;
+        padding: 1.4rem 2rem;
         border-radius: 15px;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 600;
         width: 100%;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
     }
     
     .submit-btn:hover {
@@ -384,26 +460,116 @@
         box-shadow: 0 10px 25px rgba(67, 233, 123, 0.3);
     }
     
+    /* Notificación de confirmación */
+    .confirmation-toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--secondary-gradient);
+        color: white;
+        padding: 1.2rem 2rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(67, 233, 123, 0.4);
+        display: none;
+        align-items: center;
+        gap: 12px;
+        z-index: 10001;
+        animation: slideInRight 0.3s ease;
+    }
+    
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
     /* Responsive */
-    @media (max-width: 768px) {
+    @media (max-width: 992px) {
         .page-title {
-            font-size: 2.5rem;
+            font-size: 3.5rem;
         }
         
         .page-description {
-            font-size: 1.1rem;
-        }
-        
-        .schedule-section {
-            padding: 2rem;
+            font-size: 1.3rem;
         }
         
         .section-heading {
-            font-size: 2rem;
+            font-size: 2.5rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .page-header {
+            height: 60vh;
+            min-height: 500px;
+        }
+        
+        .page-title {
+            font-size: 2.8rem;
+        }
+        
+        .page-description {
+            font-size: 1.2rem;
+        }
+        
+        .schedule-section {
+            padding: 2.5rem 2rem;
+        }
+        
+        .section-heading {
+            font-size: 2.2rem;
+        }
+        
+        .schedule-day {
+            padding: 2rem 1.5rem;
+        }
+        
+        .day-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
         }
         
         .time-slots-grid {
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        }
+        
+        .modal-content {
+            padding: 2.5rem;
+        }
+        
+        .modal-title {
+            font-size: 2rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .page-content {
+            padding: 3rem 1rem;
+        }
+        
+        .schedule-section {
+            padding: 2rem 1.5rem;
+        }
+        
+        .reserve-btn {
+            padding: 1.2rem 2.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .modal-content {
+            padding: 2rem 1.5rem;
+        }
+        
+        .selected-time {
+            font-size: 1.1rem;
+            flex-direction: column;
+            gap: 5px;
         }
     }
 </style>
@@ -449,7 +615,7 @@
                         {% if day.id in servicio.diasTrabajo %}
                             <div class="time-slots-grid">
                                 {% for horario in servicio.horariosDisponibles %}
-                                    <div class="time-slot" data-time="{{ horario }}" data-day="{{ day.name }}">
+                                    <div class="time-slot" data-time="{{ horario }}" data-day="{{ day.name }}" data-day-id="{{ day.id }}">
                                         <span>{{ horario }}</span>
                                     </div>
                                 {% endfor %}
@@ -468,7 +634,7 @@
         <!-- Botón de Reserva -->
         <div class="reserve-btn-container">
             <button class="reserve-btn" id="reserveButton" disabled>
-                <i class="fas fa-calendar-check me-2"></i>
+                <i class="fas fa-calendar-check"></i>
                 Confirmar Reserva
             </button>
         </div>
@@ -486,7 +652,7 @@
         <p class="modal-subtitle">Complete sus datos para confirmar el turno</p>
         
         <div class="selected-time" id="selectedTimeDisplay">
-            <i class="fas fa-clock me-2"></i>
+            <i class="fas fa-clock"></i>
             <span id="timeDisplay"></span>
         </div>
         
@@ -501,11 +667,16 @@
         </div>
         
         <div class="form-group">
-            {{ form_label(form.fecha) }}
-            {{ form_widget(form.fecha, {'attr': {
-                'class': 'form-control',
-                'readonly': 'readonly'
-            }}) }}
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <span class="calendar-title">Seleccione la fecha</span>
+                    <i class="fas fa-calendar-alt text-primary"></i>
+                </div>
+                {{ form_widget(form.fecha, {'attr': {
+                    'class': 'form-control datepicker',
+                    'placeholder': 'Seleccione una fecha'
+                }}) }}
+            </div>
         </div>
         
         <div class="form-group">
@@ -523,13 +694,41 @@
         {{ form_end(form) }}
     </div>
 </div>
+
+<!-- Notificación de confirmación -->
+<div class="confirmation-toast" id="confirmationToast">
+    <i class="fas fa-check-circle fa-lg"></i>
+    <span id="toastMessage">Reserva confirmada con éxito</span>
+</div>
 {% endblock %}
 
 {% block javascript %}
 {{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 <script>
     let selectedTime = null;
     let selectedDay = null;
+    let selectedDayId = null;
+    let flatpickrInstance = null;
+
+    // Inicializar calendario
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configurar flatpickr en español
+        flatpickrInstance = flatpickr(".datepicker", {
+            locale: "es",
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates, dateStr, instance) {
+                updateSelectedDate(dateStr);
+            }
+        });
+        
+        // Establecer fecha inicial como hoy
+    // Obtener la fecha actual en horario de Argentina
+    const today = new Date(new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }));
+        flatpickrInstance.setDate(today);
+    });
 
     // Seleccionar horario
     document.querySelectorAll('.time-slot').forEach(slot => {
@@ -543,21 +742,77 @@
             this.classList.add('selected');
             selectedTime = this.dataset.time;
             selectedDay = this.dataset.day;
+            selectedDayId = parseInt(this.dataset.dayId);
             
             // Habilitar botón de reserva
             document.getElementById('reserveButton').disabled = false;
+            
+            // Calcular y establecer la fecha correspondiente al día seleccionado
+            setDateForSelectedDay();
         });
     });
+
+    // Calcular la fecha para el día seleccionado
+    function setDateForSelectedDay() {
+        const today = new Date();
+        const currentDay = today.getDay(); // 0 (Domingo) a 6 (Sábado)
+        
+        // Ajustar para que coincida con nuestro sistema (1=Lunes, 7=Domingo)
+        const adjustedCurrentDay = currentDay === 0 ? 7 : currentDay;
+        
+        // Calcular diferencia de días
+        let daysToAdd = selectedDayId - adjustedCurrentDay;
+        if (daysToAdd < 0) {
+            daysToAdd += 7; // Si es un día de la semana anterior, sumar 7 días
+        }
+        
+        // Calcular la fecha objetivo
+        const targetDate = new Date(today);
+        targetDate.setDate(today.getDate() + daysToAdd);
+        
+        // Formatear fecha como YYYY-MM-DD
+        const formattedDate = targetDate.toISOString().split('T')[0];
+        
+        // Establecer la fecha en el calendario
+        if (flatpickrInstance) {
+            flatpickrInstance.setDate(formattedDate);
+        }
+        
+        // Actualizar campo de fecha en el formulario
+        document.getElementById('{{ form.fecha.vars.id }}').value = formattedDate;
+    }
+
+    // Actualizar fecha seleccionada
+    function updateSelectedDate(dateStr) {
+        document.getElementById('{{ form.fecha.vars.id }}').value = dateStr;
+        updateTimeDisplay();
+    }
+
+    // Actualizar visualización del tiempo seleccionado
+    function updateTimeDisplay() {
+        if (selectedTime) {
+            const fechaInput = document.getElementById('{{ form.fecha.vars.id }}');
+            const fechaSeleccionada = fechaInput.value;
+            
+            if (fechaSeleccionada) {
+                // Formatear fecha en formato legible
+                const fecha = new Date(fechaSeleccionada);
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const fechaFormateada = fecha.toLocaleDateString('es-ES', options);
+                
+                // Mostrar en el modal
+                document.getElementById('timeDisplay').textContent = 
+                    `${fechaFormateada} - ${selectedTime}`;
+            }
+        }
+    }
 
     // Abrir modal de reserva
     document.getElementById('reserveButton').addEventListener('click', function() {
         if (selectedTime) {
-            // Mostrar horario seleccionado
-            document.getElementById('timeDisplay').textContent = 
-                `${selectedDay} - ${selectedTime}`;
-            
-            // Llenar campos del formulario
-            document.getElementById('{{ form.hora.vars.id }}').value = selectedTime + ':00';
+            // Actualizar campos del formulario
+            document.getElementById('{{ form.hora.vars.id }}').value = selectedTime;
+            updateTimeDisplay();
             
             // Mostrar modal
             document.getElementById('reservationModal').style.display = 'flex';
@@ -583,10 +838,37 @@
         }
     });
 
-    // Inicializar fecha con hoy
-    document.addEventListener('DOMContentLoaded', function() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('{{ form.fecha.vars.id }}').value = today;
+    // Mostrar notificación de confirmación
+    function showConfirmation(message) {
+        const toast = document.getElementById('confirmationToast');
+        const messageElement = document.getElementById('toastMessage');
+        
+        messageElement.textContent = message;
+        toast.style.display = 'flex';
+        
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 5000);
+    }
+
+    // Manejar envío del formulario
+    document.getElementById('reservationForm').addEventListener('submit', function(e) {
+        // Aquí iría la lógica para enviar el formulario via AJAX o procesamiento normal
+        // Por ahora, simulamos un envío exitoso
+        
+        closeModal();
+        showConfirmation('¡Reserva confirmada con éxito!');
+        
+        // Reiniciar selección
+        document.querySelectorAll('.time-slot').forEach(s => {
+            s.classList.remove('selected');
+        });
+        document.getElementById('reserveButton').disabled = true;
+        selectedTime = null;
+        selectedDay = null;
+        
+        // También podrías enviar el formulario de manera tradicional quitando el preventDefault()
+        // this.submit();
     });
 </script>
 {% endblock %}
