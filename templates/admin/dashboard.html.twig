@@ -100,6 +100,49 @@
             left: 280px;
             z-index: 999;
             transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: rgba(108, 99, 255, 0.1);
+            border-radius: 50px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .navbar-user img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .btn-logout {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+            border: none;
+            border-radius: 50px;
+            padding: 8px 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-logout:hover {
+            background: var(--danger);
+            color: white;
         }
         
         .stat-card {
@@ -199,6 +242,70 @@
             justify-content: space-between;
         }
         
+        .filters-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .filter-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+        }
+        
+        .filter-toggle h6 {
+            margin: 0;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .filter-content {
+            display: none;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .filter-content.active {
+            display: block;
+        }
+        
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 200px;
+        }
+        
+        .filter-label {
+            font-weight: 600;
+            color: #495057;
+            white-space: nowrap;
+            margin-bottom: 5px;
+        }
+        
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
         .table th {
             border-top: none;
             font-weight: 600;
@@ -259,6 +366,7 @@
             border-radius: 10px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
         }
         
         .btn-edit {
@@ -440,6 +548,15 @@
             .sidebar-overlay.active {
                 display: block;
             }
+            
+            .filter-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .filter-group {
+                width: 100%;
+            }
         }
         
         .floating-notification {
@@ -494,17 +611,6 @@
             color: #6c757d;
         }
         
-        .filter-dropdown .dropdown-menu {
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border: none;
-        }
-        
-        .filter-dropdown .form-check {
-            margin-bottom: 10px;
-        }
-        
         .stats-change {
             font-size: 13px;
             font-weight: 600;
@@ -518,6 +624,41 @@
         
         .stats-change.negative {
             color: var(--danger);
+        }
+        
+        .form-check-input:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-filter {
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(108, 99, 255, 0.2);
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-filter:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-filter-reset {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+            border: 1px solid rgba(108, 117, 125, 0.2);
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-filter-reset:hover {
+            background: #6c757d;
+            color: white;
         }
     </style>
 {% endblock %}
@@ -564,11 +705,6 @@
                     <i class="fas fa-cog"></i> Configuración
                 </a>
             </li>
-            <li class="nav-item mt-4">
-                <a class="nav-link" href="{{ path('app_logout') }}">
-                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                </a>
-            </li>
         </ul>
     </div>
 
@@ -581,60 +717,14 @@
             <h5 class="mb-0">Dashboard Administrador</h5>
         </div>
         
-        <div class="d-flex align-items-center gap-3">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" class="form-control" placeholder="Buscar usuarios...">
+        <div class="navbar-actions">
+            <div class="navbar-user">
+                <img src="https://ui-avatars.com/api/?name=Admin+User&background=6c63ff&color=fff" alt="Admin">
+                <span>Administrador</span>
             </div>
-            
-            <div class="dropdown filter-dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-filter me-2"></i>Filtrar
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="filterDropdown">
-                    <li>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="filterActive" checked>
-                            <label class="form-check-label" for="filterActive">
-                                Suscripciones activas
-                            </label>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="filterExpiring" checked>
-                            <label class="form-check-label" for="filterExpiring">
-                                Próximas a vencer
-                            </label>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="filterExpired">
-                            <label class="form-check-label" for="filterExpired">
-                                Vencidas
-                            </label>
-                        </div>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <button class="btn btn-sm btn-primary w-100">Aplicar filtros</button>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="dropdown">
-                <a href="#" class="dropdown-toggle text-dark text-decoration-none d-flex align-items-center" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=6c63ff&color=fff" class="user-avatar me-2">
-                    <span>Administrador</span>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Perfil</a></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Configuración</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión</a></li>
-                </ul>
-            </div>
+            <a href="{{ path('app_logout') }}" class="btn-logout">
+                <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
+            </a>
         </div>
     </nav>
 
@@ -704,13 +794,89 @@
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Gestión de Usuarios</h5>
-                <button class="btn btn-premium" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                    <i class="fas fa-plus me-2"></i>Nuevo Usuario
-                </button>
+                <div>
+                    <button class="btn btn-premium" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                        <i class="fas fa-plus me-2"></i>Nuevo Usuario
+                    </button>
+                </div>
             </div>
+            
+            <!-- Filters Container -->
+            <div class="filters-container">
+                <div class="filter-toggle" id="filterToggle">
+                    <h6><i class="fas fa-filter me-2"></i>Filtros de Búsqueda</h6>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                
+                <div class="filter-content" id="filterContent">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label class="filter-label">Buscar por nombre o email</label>
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" class="form-control" id="searchUsers" placeholder="Buscar usuarios...">
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Estado de suscripción</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input filter-checkbox" type="checkbox" id="filterActive" value="activa" checked>
+                                    <label class="form-check-label" for="filterActive">Activas</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input filter-checkbox" type="checkbox" id="filterExpiring" value="proxima_vencer" checked>
+                                    <label class="form-check-label" for="filterExpiring">Próximas a vencer</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input filter-checkbox" type="checkbox" id="filterExpired" value="vencida" checked>
+                                    <label class="form-check-label" for="filterExpired">Vencidas</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input filter-checkbox" type="checkbox" id="filterInactive" value="inactiva" checked>
+                                    <label class="form-check-label" for="filterInactive">Inactivas</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Tipo de plan</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input filter-checkbox" type="checkbox" id="filterBasic" value="basico" checked>
+                                    <label class="form-check-label" for="filterBasic">Básico</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input filter-checkbox" type="checkbox" id="filterProfessional" value="profesional" checked>
+                                    <label class="form-check-label" for="filterProfessional">Profesional</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input filter-checkbox" type="checkbox" id="filterEnterprise" value="empresa" checked>
+                                    <label class="form-check-label" for="filterEnterprise">Empresa</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input filter-checkbox" type="checkbox" id="filterNone" value="none" checked>
+                                    <label class="form-check-label" for="filterNone">Sin plan</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-actions">
+                            <button class="btn btn-filter" id="applyFilters">
+                                <i class="fas fa-check me-1"></i>Aplicar
+                            </button>
+                            <button class="btn btn-filter-reset" id="resetFilters">
+                                <i class="fas fa-times me-1"></i>Limpiar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover" id="usersTable">
                         <thead>
                             <tr>
                                 <th>Usuario</th>
@@ -724,7 +890,9 @@
                         <tbody>
                             {% for usuario in usuarios %}
                             {% set suscripcion_activa = usuario.getSuscripcionActiva() %}
-                            <tr>
+                            <tr data-user-id="{{ usuario.id }}" 
+                                data-status="{{ suscripcion_activa ? suscripcion_activa.getEstado() : 'inactiva' }}" 
+                                data-plan="{{ suscripcion_activa ? suscripcion_activa.tipo : 'none' }}">
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <img src="https://ui-avatars.com/api/?name={{ usuario.nombre|url_encode }}&background=random" class="user-avatar me-3">
@@ -794,10 +962,10 @@
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <button class="btn btn-action btn-edit" data-bs-toggle="modal" data-bs-target="#editUserModal" data-user-id="{{ usuario.id }}">
+                                        <button class="btn btn-action btn-edit" data-user-id="{{ usuario.id }}">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="btn btn-action btn-delete">
+                                        <button class="btn btn-action btn-delete" data-user-id="{{ usuario.id }}">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -835,32 +1003,32 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="addUserForm">
+                    <form id="addUserForm" action="{{ path('admin_usuario_nuevo') }}" method="POST">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="userName" class="form-label">Nombre Completo</label>
+                                    <label for="userName" class="form-label">Nombre Completo *</label>
                                     <input type="text" class="form-control" id="userName" name="nombre" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="userEmail" class="form-label">Email</label>
+                                    <label for="userEmail" class="form-label">Email *</label>
                                     <input type="email" class="form-control" id="userEmail" name="email" required>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="mb-4">
-                            <label class="form-label">Seleccionar Plan</label>
+                            <label class="form-label">Seleccionar Plan *</label>
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="plan-card" data-plan="basico">
                                         <h5>Básico</h5>
                                         <div class="price">$10.000</div>
-                                        <small class="text-muted">/trimestral</small>
+                                        <small class="text-muted">/mensual</small>
                                         <div class="mt-3">
-                                            <span class="badge badge-plan badge-basico">ROLE_PLAN_BASICO</span>
+                                            <span class="badge badge-plan badge-basico">BÁSICO</span>
                                         </div>
                                     </div>
                                 </div>
@@ -868,9 +1036,9 @@
                                     <div class="plan-card" data-plan="profesional">
                                         <h5>Profesional</h5>
                                         <div class="price">$15.000</div>
-                                        <small class="text-muted">/trimestral</small>
+                                        <small class="text-muted">/mensual</small>
                                         <div class="mt-3">
-                                            <span class="badge badge-plan badge-profesional">ROLE_PLAN_PROFESIONAL</span>
+                                            <span class="badge badge-plan badge-profesional">PROFESIONAL</span>
                                         </div>
                                     </div>
                                 </div>
@@ -878,9 +1046,9 @@
                                     <div class="plan-card" data-plan="empresa">
                                         <h5>Empresa</h5>
                                         <div class="price">$40.000</div>
-                                        <small class="text-muted">/trimestral</small>
+                                        <small class="text-muted">/mensual</small>
                                         <div class="mt-3">
-                                            <span class="badge badge-plan badge-empresa">ROLE_PLAN_EMPRESA</span>
+                                            <span class="badge badge-plan badge-empresa">EMPRESA</span>
                                         </div>
                                     </div>
                                 </div>
@@ -889,7 +1057,7 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Duración de Suscripción</label>
+                            <label class="form-label">Duración de Suscripción *</label>
                             <div>
                                 <span class="duration-badge selected" data-duration="3">3 meses</span>
                                 <span class="duration-badge" data-duration="6">6 meses</span>
@@ -902,7 +1070,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-premium" id="createUserBtn">Crear Usuario</button>
+                    <button type="submit" form="addUserForm" class="btn btn-premium">Crear Usuario</button>
                 </div>
             </div>
         </div>
@@ -917,18 +1085,18 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editUserForm">
+                    <form id="editUserForm" action="" method="POST">
                         <input type="hidden" id="editUserId" name="id">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="editUserName" class="form-label">Nombre Completo</label>
+                                    <label for="editUserName" class="form-label">Nombre Completo *</label>
                                     <input type="text" class="form-control" id="editUserName" name="nombre" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="editUserEmail" class="form-label">Email</label>
+                                    <label for="editUserEmail" class="form-label">Email *</label>
                                     <input type="email" class="form-control" id="editUserEmail" name="email" required>
                                 </div>
                             </div>
@@ -946,9 +1114,9 @@
                                     <div class="plan-card" data-plan="basico">
                                         <h5>Básico</h5>
                                         <div class="price">$10.000</div>
-                                        <small class="text-muted">/trimestral</small>
+                                        <small class="text-muted">/mensual</small>
                                         <div class="mt-3">
-                                            <span class="badge badge-plan badge-basico">ROLE_PLAN_BASICO</span>
+                                            <span class="badge badge-plan badge-basico">BÁSICO</span>
                                         </div>
                                     </div>
                                 </div>
@@ -956,9 +1124,9 @@
                                     <div class="plan-card" data-plan="profesional">
                                         <h5>Profesional</h5>
                                         <div class="price">$15.000</div>
-                                        <small class="text-muted">/trimestral</small>
+                                        <small class="text-muted">/mensual</small>
                                         <div class="mt-3">
-                                            <span class="badge badge-plan badge-profesional">ROLE_PLAN_PROFESIONAL</span>
+                                            <span class="badge badge-plan badge-profesional">PROFESIONAL</span>
                                         </div>
                                     </div>
                                 </div>
@@ -966,9 +1134,9 @@
                                     <div class="plan-card" data-plan="empresa">
                                         <h5>Empresa</h5>
                                         <div class="price">$40.000</div>
-                                        <small class="text-muted">/trimestral</small>
+                                        <small class="text-muted">/mensual</small>
                                         <div class="mt-3">
-                                            <span class="badge badge-plan badge-empresa">ROLE_PLAN_EMPRESA</span>
+                                            <span class="badge badge-plan badge-empresa">EMPRESA</span>
                                         </div>
                                     </div>
                                 </div>
@@ -990,7 +1158,27 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-premium" id="saveUserBtn">Guardar Cambios</button>
+                    <button type="submit" form="editUserForm" class="btn btn-premium">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.</p>
+                    <p class="text-danger"><strong>Advertencia:</strong> Todos los servicios y datos asociados a este usuario también serán eliminados.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <a href="#" id="confirmDeleteBtn" class="btn btn-danger">Eliminar Usuario</a>
                 </div>
             </div>
         </div>
@@ -1021,6 +1209,14 @@
         document.querySelector('.sidebar-overlay').addEventListener('click', function() {
             document.querySelector('.sidebar').classList.remove('active');
             this.classList.remove('active');
+        });
+        
+        // Toggle filters
+        document.getElementById('filterToggle').addEventListener('click', function() {
+            document.getElementById('filterContent').classList.toggle('active');
+            const icon = this.querySelector('i.fa-chevron-down');
+            icon.classList.toggle('fa-chevron-down');
+            icon.classList.toggle('fa-chevron-up');
         });
         
         // Plan selection in modals
@@ -1063,34 +1259,6 @@
             });
         });
         
-        // Create user button
-        document.getElementById('createUserBtn')?.addEventListener('click', function() {
-            const form = document.getElementById('addUserForm');
-            if (form.checkValidity()) {
-                // Simulate API call
-                setTimeout(() => {
-                    $('#addUserModal').modal('hide');
-                    showNotification('Usuario creado exitosamente');
-                }, 1000);
-            } else {
-                form.reportValidity();
-            }
-        });
-        
-        // Save user button
-        document.getElementById('saveUserBtn')?.addEventListener('click', function() {
-            const form = document.getElementById('editUserForm');
-            if (form.checkValidity()) {
-                // Simulate API call
-                setTimeout(() => {
-                    $('#editUserModal').modal('hide');
-                    showNotification('Cambios guardados exitosamente');
-                }, 1000);
-            } else {
-                form.reportValidity();
-            }
-        });
-        
         // Show notification function
         function showNotification(message) {
             const notification = document.getElementById('successNotification');
@@ -1106,11 +1274,13 @@
         document.querySelectorAll('.btn-edit').forEach(btn => {
             btn.addEventListener('click', function() {
                 const userId = this.getAttribute('data-user-id');
-                // In a real application, you would fetch user data from the server
-                console.log('Editing user with ID:', userId);
                 
-                // Simulate loading user data
+                // Set form action
+                document.getElementById('editUserForm').action = `/admin/usuario/${userId}/editar`;
                 document.getElementById('editUserId').value = userId;
+                
+                // In a real application, you would fetch user data from the server via AJAX
+                // For now, we'll simulate with dummy data
                 document.getElementById('editUserName').value = 'Usuario ' + userId;
                 document.getElementById('editUserEmail').value = 'usuario' + userId + '@example.com';
                 
@@ -1127,7 +1297,91 @@
                         </div>
                     </div>
                 `;
+                
+                // Show the modal
+                const editModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+                editModal.show();
             });
+        });
+        
+        // Delete user button click handler
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const userId = this.getAttribute('data-user-id');
+                
+                // Set delete URL
+                document.getElementById('confirmDeleteBtn').href = `/admin/usuario/${userId}/eliminar`;
+                
+                // Show the modal
+                const deleteModal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+                deleteModal.show();
+            });
+        });
+        
+        // Filter functionality
+        function applyFilters() {
+            const searchText = document.getElementById('searchUsers').value.toLowerCase();
+            
+            // Get selected status filters
+            const statusFilters = [];
+            document.querySelectorAll('.filter-checkbox[value="activa"], .filter-checkbox[value="proxima_vencer"], .filter-checkbox[value="vencida"], .filter-checkbox[value="inactiva"]').forEach(checkbox => {
+                if (checkbox.checked) {
+                    statusFilters.push(checkbox.value);
+                }
+            });
+            
+            // Get selected plan filters
+            const planFilters = [];
+            document.querySelectorAll('.filter-checkbox[value="basico"], .filter-checkbox[value="profesional"], .filter-checkbox[value="empresa"], .filter-checkbox[value="none"]').forEach(checkbox => {
+                if (checkbox.checked) {
+                    planFilters.push(checkbox.value);
+                }
+            });
+            
+            document.querySelectorAll('#usersTable tbody tr').forEach(row => {
+                const userName = row.querySelector('h6').textContent.toLowerCase();
+                const userEmail = row.querySelector('.text-muted').textContent.toLowerCase();
+                const status = row.getAttribute('data-status');
+                const plan = row.getAttribute('data-plan');
+                
+                // Text search
+                const matchesSearch = searchText === '' || userName.includes(searchText) || userEmail.includes(searchText);
+                
+                // Status filter
+                const matchesStatus = statusFilters.length === 0 || statusFilters.includes(status);
+                
+                // Plan filter
+                const matchesPlan = planFilters.length === 0 || planFilters.includes(plan);
+                
+                // Show or hide row based on filters
+                if (matchesSearch && matchesStatus && matchesPlan) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        // Apply filters button
+        document.getElementById('applyFilters').addEventListener('click', applyFilters);
+        
+        // Reset filters button
+        document.getElementById('resetFilters').addEventListener('click', function() {
+            // Reset search
+            document.getElementById('searchUsers').value = '';
+            
+            // Check all filter checkboxes
+            document.querySelectorAll('.filter-checkbox').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+            
+            // Apply reset filters
+            applyFilters();
+        });
+        
+        // Initialize with all users visible
+        document.addEventListener('DOMContentLoaded', function() {
+            applyFilters();
         });
         
         // Initialize tooltips

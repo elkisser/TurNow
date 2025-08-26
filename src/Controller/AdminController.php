@@ -114,7 +114,7 @@ class AdminController extends AbstractController
             $usuario = new Usuario();
             $usuario->setNombre($request->request->get('nombre'));
             $usuario->setEmail($request->request->get('email'));
-            $usuario->setPassword(password_hash(bin2hex(random_bytes(10)), PASSWORD_DEFAULT)); // Contraseña temporal
+            $usuario->setPassword("1234"); // Contraseña temporal
             
             // Asignar roles según el plan
             $plan = $request->request->get('plan');
