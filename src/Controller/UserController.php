@@ -11,8 +11,11 @@ final class UserController extends AbstractController
     #[Route('/user', name: 'app_user')]
     public function index(): Response
     {
+        $user = $this->getUser();
+        $suscripcionActiva = $user ? $user->getSuscripcionActiva() : null;
+        
         return $this->render('user/index.html.twig', [
-            'controller_name' => 'UserController',
+            'suscripcion_activa' => $suscripcionActiva,
         ]);
     }
 }
