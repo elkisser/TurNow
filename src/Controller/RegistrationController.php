@@ -17,7 +17,7 @@ class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, 
-                           Security $security, EntityManagerInterface $entityManager): Response
+    Security $security, EntityManagerInterface $entityManager): Response
     {
         // Si el usuario ya está autenticado, redirigir al dashboard
         if ($this->getUser()) {

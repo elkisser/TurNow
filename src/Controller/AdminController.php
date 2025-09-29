@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -56,10 +57,17 @@ class AdminController extends AbstractController
     #[Route('/usuario/{id}/editar', name: 'admin_usuario_editar')]
     public function editarUsuario(Usuario $usuario, Request $request, EntityManagerInterface $entityManager): Response
     {
-        // Lógica para editar usuario y suscripción
         if ($request->isMethod('POST')) {
             $plan = $request->request->get('plan');
-            $duracionExtension = $request->request->get('duracion_extension');
+            $duracionExtension = (int) $request->request->get('duracion_extension', '0');
+            
+            // Debug: Log de los datos recibidos
+            error_log("Plan recibido: " . $plan);
+            error_log("Duración extensión: " . $duracionExtension);
+            
+            // Actualizar datos básicos del usuario
+            $usuario->setNombre($request->request->get('nombre'));
+            $usuario->setEmail($request->request->get('email'));
             
             // Actualizar roles según el plan seleccionado
             $roles = ['ROLE_USER'];
@@ -77,22 +85,49 @@ class AdminController extends AbstractController
             
             $usuario->setRoles($roles);
             
-            // Crear o actualizar suscripción
+            // Obtener suscripción activa
             $suscripcion = $usuario->getSuscripcionActiva();
+            
             if (!$suscripcion) {
+                // Crear nueva suscripción
                 $suscripcion = new Suscripcion();
                 $suscripcion->setUsuario($usuario);
+                $suscripcion->setTipo($plan);
                 $suscripcion->setFechaInicio(new \DateTimeImmutable());
+                $suscripcion->setActiva(true);
                 $entityManager->persist($suscripcion);
-            }
-            
-            $suscripcion->setTipo($plan);
-            
-            // Extender suscripción si se especificó una duración
-            if ($duracionExtension) {
-                $fechaFin = $suscripcion->getFechaFin() ?: new \DateTimeImmutable();
-                $fechaFin = $fechaFin->modify("+$duracionExtension months");
-                $suscripcion->setFechaFin($fechaFin);
+                
+                error_log("Nueva suscripción creada para plan: " . $plan);
+                
+                // Solo establecer fecha_fin si se proporcionó una duración
+                if ($duracionExtension && is_numeric($duracionExtension)) {
+                    $fechaFin = $this->calcularFechaVencimiento(new \DateTimeImmutable(), $duracionExtension);
+                    $suscripcion->setFechaFin($fechaFin);
+                    error_log("Fecha fin establecida: " . $fechaFin->format('Y-m-d H:i:s'));
+                }
+            } else {
+                // Actualizar suscripción existente
+                $suscripcion->setTipo($plan);
+                $suscripcion->setActiva(true);
+                
+                error_log("Suscripción existente actualizada para plan: " . $plan);
+                
+                // Extender suscripción solo si se especificó una duración
+                if ($duracionExtension > 0) {
+                    $fechaFinActual = $suscripcion->getFechaFin();
+                    
+                    if ($fechaFinActual) {
+                        // Si ya tiene fecha_fin, calcular desde la fecha de inicio (no extender)
+                        // Calcular desde la fecha de inicio de la suscripción
+                        $fechaFin = $this->calcularFechaVencimiento($suscripcion->getFechaInicio(), $duracionExtension);
+                    } else {
+                        // Si no tiene fecha_fin, calcular desde la fecha actual
+                        $fechaFin = $this->calcularFechaVencimiento(new \DateTimeImmutable(), $duracionExtension);
+                    }
+                    
+                    $suscripcion->setFechaFin($fechaFin);
+                    error_log("Fecha fin extendida: " . $fechaFin->format('Y-m-d H:i:s'));
+                }
             }
             
             $entityManager->flush();
@@ -105,31 +140,35 @@ class AdminController extends AbstractController
             'usuario' => $usuario
         ]);
     }
-    
+
     #[Route('/usuario/nuevo', name: 'admin_usuario_nuevo')]
-    public function nuevoUsuario(Request $request, EntityManagerInterface $entityManager): Response
+    public function nuevoUsuario(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
         if ($request->isMethod('POST')) {
             // Crear nuevo usuario
             $usuario = new Usuario();
             $usuario->setNombre($request->request->get('nombre'));
             $usuario->setEmail($request->request->get('email'));
-            $usuario->setPassword("1234"); // Contraseña temporal
+            
+            // Generar contraseña temporal y hashearla
+            $plainPassword = $request->request->get('password') ?: 'temp_password_123';
+            $hashedPassword = $passwordHasher->hashPassword($usuario, $plainPassword);
+            $usuario->setPassword($hashedPassword);
             
             // Asignar roles según el plan
             $plan = $request->request->get('plan');
             $roles = ['ROLE_USER'];
 
-            // Usamos match y filtramos nulls automáticamente
-            $rolePlan = match($plan) {
-                'basico' => 'ROLE_PLAN_BASICO',
-                'profesional' => 'ROLE_PLAN_PROFESIONAL',
-                'empresa' => 'ROLE_PLAN_EMPRESA',
-                default => null,
-            };
-
-            if ($rolePlan !== null) {
-                $roles[] = $rolePlan;
+            switch($plan) {
+                case 'basico':
+                    $roles[] = 'ROLE_PLAN_BASICO';
+                    break;
+                case 'profesional':
+                    $roles[] = 'ROLE_PLAN_PROFESIONAL';
+                    break;
+                case 'empresa':
+                    $roles[] = 'ROLE_PLAN_EMPRESA';
+                    break;
             }
             
             $usuario->setRoles($roles);
@@ -139,10 +178,14 @@ class AdminController extends AbstractController
             $suscripcion->setUsuario($usuario);
             $suscripcion->setTipo($plan);
             $suscripcion->setFechaInicio(new \DateTimeImmutable());
+            $suscripcion->setActiva(true);
             
+            // Establecer fecha_fin solo si se proporciona duración
             $duracion = (int) $request->request->get('duracion');
-            $fechaFin = (new \DateTimeImmutable())->modify("+$duracion months");
-            $suscripcion->setFechaFin($fechaFin);
+            if ($duracion > 0) {
+                $fechaFin = $this->calcularFechaVencimiento(new \DateTimeImmutable(), $duracion);
+                $suscripcion->setFechaFin($fechaFin);
+            }
             
             $entityManager->persist($usuario);
             $entityManager->persist($suscripcion);
@@ -153,5 +196,35 @@ class AdminController extends AbstractController
         }
         
         return $this->render('admin/nuevo_usuario.html.twig');
+    }
+    
+    /**
+     * Calcula la fecha de vencimiento agregando meses de forma precisa
+     * Maneja correctamente años bisiestos y meses con diferentes números de días
+     */
+    private function calcularFechaVencimiento(\DateTimeImmutable $fechaInicio, int $meses): \DateTimeImmutable
+    {
+        $año = (int) $fechaInicio->format('Y');
+        $mes = (int) $fechaInicio->format('n');
+        $dia = (int) $fechaInicio->format('j');
+        $hora = (int) $fechaInicio->format('G');
+        $minuto = (int) $fechaInicio->format('i');
+        $segundo = (int) $fechaInicio->format('s');
+        
+        // Calcular el año y mes final
+        $mesFinal = $mes + $meses;
+        $añoFinal = $año + intval(($mesFinal - 1) / 12);
+        $mesFinal = (($mesFinal - 1) % 12) + 1;
+        
+        // Ajustar el día si es necesario (para casos como 31 de enero + 1 mes = 28/29 de febrero)
+        $diasEnMesFinal = cal_days_in_month(CAL_GREGORIAN, $mesFinal, $añoFinal);
+        $diaFinal = min($dia, $diasEnMesFinal);
+        
+        // Crear la fecha final
+        $fechaFin = new \DateTimeImmutable();
+        $fechaFin = $fechaFin->setDate($añoFinal, $mesFinal, $diaFinal);
+        $fechaFin = $fechaFin->setTime($hora, $minuto, $segundo);
+        
+        return $fechaFin;
     }
 }

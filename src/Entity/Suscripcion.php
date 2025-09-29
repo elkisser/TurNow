@@ -20,13 +20,13 @@ class Suscripcion
     #[ORM\Column(length: 50)]
     private ?string $tipo = null; // 'basico', 'profesional', 'empresa'
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $fechaInicio = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $fechaFin = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $fechaCreacion = null;
 
     #[ORM\Column]
@@ -116,6 +116,11 @@ class Suscripcion
 
     public function getDiasRestantes(): int
     {
+        // Si no hay fecha de fin, la suscripción es permanente (no vence)
+        if ($this->fechaFin === null) {
+            return 999999; // Un número muy alto para indicar que no vence
+        }
+        
         $now = new \DateTimeImmutable();
         if ($now > $this->fechaFin) {
             return 0;
@@ -129,6 +134,11 @@ class Suscripcion
     {
         if (!$this->activa) {
             return 'inactiva';
+        }
+
+        // Si no hay fecha de fin, la suscripción es permanente
+        if ($this->fechaFin === null) {
+            return 'activa';
         }
 
         $diasRestantes = $this->getDiasRestantes();

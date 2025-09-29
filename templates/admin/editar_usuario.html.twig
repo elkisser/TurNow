@@ -1,0 +1,207 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Usuario - Admin TurNow{% endblock %}
+
+{% block css %}
+    {{ parent() }}
+    <style>
+        .admin-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .admin-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+        
+        .duration-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 4px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .duration-badge:hover, .duration-badge.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<section class="admin-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="admin-card">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-edit fa-3x text-primary mb-3"></i>
+                        <h2 class="h3 text-dark">Editar Usuario</h2>
+                        <p class="text-muted">Modificar datos del usuario: {{ usuario.nombre }}</p>
+                    </div>
+
+                    <form method="post" id="editarUsuarioForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nombre" class="form-label">Nombre Completo</label>
+                                    <input type="text" 
+                                           class="form-control form-control-lg" 
+                                           id="nombre" 
+                                           name="nombre" 
+                                           value="{{ usuario.nombre }}" 
+                                           autocomplete="name"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" 
+                                           class="form-control form-control-lg" 
+                                           id="email" 
+                                           name="email" 
+                                           value="{{ usuario.email }}" 
+                                           autocomplete="email"
+                                           required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="plan" class="form-label">Plan</label>
+                            <select class="form-select form-select-lg" 
+                                    id="plan" 
+                                    name="plan" 
+                                    autocomplete="off"
+                                    required>
+                                <option value="">Seleccionar plan</option>
+                                <option value="basico" {% if 'ROLE_PLAN_BASICO' in usuario.roles %}selected{% endif %}>Básico</option>
+                                <option value="profesional" {% if 'ROLE_PLAN_PROFESIONAL' in usuario.roles %}selected{% endif %}>Profesional</option>
+                                <option value="empresa" {% if 'ROLE_PLAN_EMPRESA' in usuario.roles %}selected{% endif %}>Empresa</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <fieldset>
+                                <legend class="form-label">Extender Suscripción</legend>
+                                <div role="group" aria-labelledby="extension-legend">
+                                    <span class="duration-badge" 
+                                          data-duration="0" 
+                                          role="button" 
+                                          tabindex="0" 
+                                          aria-pressed="false">Sin extensión</span>
+                                    <span class="duration-badge" 
+                                          data-duration="3" 
+                                          role="button" 
+                                          tabindex="0" 
+                                          aria-pressed="false">+3 meses</span>
+                                    <span class="duration-badge" 
+                                          data-duration="6" 
+                                          role="button" 
+                                          tabindex="0" 
+                                          aria-pressed="false">+6 meses</span>
+                                    <span class="duration-badge" 
+                                          data-duration="12" 
+                                          role="button" 
+                                          tabindex="0" 
+                                          aria-pressed="false">+1 año</span>
+                                    <span class="duration-badge" 
+                                          data-duration="24" 
+                                          role="button" 
+                                          tabindex="0" 
+                                          aria-pressed="false">+2 años</span>
+                                </div>
+                                <input type="hidden" 
+                                       id="duracion_extension" 
+                                       name="duracion_extension" 
+                                       value="0"
+                                       autocomplete="off">
+                                <div class="form-text">Selecciona cuántos meses agregar a la suscripción actual.</div>
+                            </fieldset>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-premium btn-lg">
+                                <i class="fas fa-save me-2"></i>Guardar Cambios
+                            </button>
+                            <a href="{{ path('admin_dashboard') }}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Editar usuario - DOM loaded');
+    
+    // Duration selection
+    document.querySelectorAll('.duration-badge').forEach(badge => {
+        badge.addEventListener('click', function() {
+            selectDurationBadge(this);
+        });
+        
+        // Add keyboard support
+        badge.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                selectDurationBadge(this);
+            }
+        });
+    });
+    
+    function selectDurationBadge(badge) {
+        console.log('Badge clicked:', badge.getAttribute('data-duration'));
+        
+        // Remove selected class and aria-pressed from all badges
+        document.querySelectorAll('.duration-badge').forEach(b => {
+            b.classList.remove('selected');
+            b.setAttribute('aria-pressed', 'false');
+        });
+        
+        // Add selected class and aria-pressed to clicked badge
+        badge.classList.add('selected');
+        badge.setAttribute('aria-pressed', 'true');
+        
+        // Update hidden input value
+        const duration = badge.getAttribute('data-duration');
+        document.getElementById('duracion_extension').value = duration;
+        
+        console.log('Duración seleccionada:', duration);
+        console.log('Valor del input:', document.getElementById('duracion_extension').value);
+    }
+    
+    // Select "Sin extensión" by default
+    const defaultBadge = document.querySelector('.duration-badge[data-duration="0"]');
+    if (defaultBadge) {
+        selectDurationBadge(defaultBadge);
+        console.log('Badge por defecto seleccionado');
+    }
+    
+    // Form submission debug
+    document.getElementById('editarUsuarioForm').addEventListener('submit', function(e) {
+        const duracion = document.getElementById('duracion_extension').value;
+        console.log('Formulario enviado - Duración:', duracion);
+        alert('Duración seleccionada: ' + duracion + ' meses');
+    });
+});
+</script>
+{% endblock %}
